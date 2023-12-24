@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Auth\Login;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -17,6 +18,11 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\Support\Enums\MaxWidth;
+use Swis\Filament\Backgrounds\FilamentBackgroundsPlugin;
+use Jeffgreco13\FilamentBreezy\BreezyCore;
+use Illuminate\Validation\Rules\Password;
+
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -26,7 +32,12 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->login()
+            ->login(Login::class)
+            ->passwordReset()
+            ->sidebarWidth('16rem')
+            ->maxContentWidth(MaxWidth::Full)
+            ->brandName('Reuse')
+            ->profile()
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -40,6 +51,27 @@ class AdminPanelProvider extends PanelProvider
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
             ])
+            ->plugins([
+                FilamentBackgroundsPlugin::make()
+                    ->showAttribution(false),
+                \Hasnayeen\Themes\ThemesPlugin::make(),
+                BreezyCore::make()
+                    ->myProfile(
+                        shouldRegisterUserMenu: true,
+                        // shouldRegisterNavigation: true,
+                        hasAvatars: true,
+                        slug: 'my-profile',
+                    )
+
+                    ->passwordUpdateRules(
+                        rules: [Password::default()->mixedCase()->uncompromised(3)],
+                        requiresCurrentPassword: true,
+                    )
+                    ->avatarUploadComponent(fn ($fileUpload) => $fileUpload->disableLabel())
+                    // ->avatarUploadComponent(fn () => FileUpload::make('avatar_url')->disk('profile-photos'))
+                    ->enableTwoFactorAuthentication()
+
+            ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -50,6 +82,7 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                \Hasnayeen\Themes\Http\Middleware\SetTheme::class
             ])
             ->authMiddleware([
                 Authenticate::class,
