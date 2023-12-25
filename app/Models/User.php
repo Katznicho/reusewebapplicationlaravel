@@ -8,6 +8,7 @@ use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
@@ -37,14 +38,14 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         'name',
         'email',
         'password',
-        'account_balance',
-        'account_currency',
+        'phone_number',
         'role',
         'is_admin',
-        'is_wallet_active',
-        'show_wallet_balance',
-        'pin',
         'is_user_verified',
+        'otp',
+        'otp_send_time',
+        'device_token'
+
     ];
 
     /**
@@ -94,5 +95,23 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     public function notifications(): HasMany
     {
         return $this->hasMany(UserNotification::class);
+    }
+
+    //user has an account
+    public function account(): HasOne
+    {
+        return $this->hasOne(UserAccount::class);
+    }
+
+    //user has a device
+    public function device(): HasOne
+    {
+        return $this->hasOne(UserDevice::class);
+    }
+
+    //user has location
+    public function location(): HasOne
+    {
+        return $this->hasOne(UserLocation::class);
     }
 }

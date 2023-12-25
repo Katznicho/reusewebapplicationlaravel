@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Api\Auth\AuthController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -14,10 +13,12 @@ Route::prefix('auth')->group(function () {
     Route::post('resetPassword', [AuthController::class, 'resetPassword']);
 
     Route::middleware('auth:sanctum')->group(function () {
-        Route::post('createUserProfile', [AuthController::class, 'createUserProfile']);
-        Route::post('updateUserProfile', [AuthController::class, 'updateUserProfile']);
+        Route::post('setUpUserWalletAccount', [AuthController::class, 'setUpUserWalletAccount']);
+        Route::post('changeCustomerPin', [AuthController::class, 'changeCustomerPin']);
+        Route::post("saveOrUpdateUserLocation", [AuthController::class, "saveOrUpdateUserLocation"]);
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('changePassword', [AuthController::class, 'changePassword']);
         Route::post('updateAvatar', [AuthController::class, 'updateAvatar']);
+        Route::post('saveDeviceInfo', [AuthController::class, 'saveDeviceInfo']);
     });
 });

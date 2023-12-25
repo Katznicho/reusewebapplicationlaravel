@@ -50,6 +50,14 @@ class AdminPanelProvider extends PanelProvider
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
             ])
+            ->navigationGroups([
+                'Users',
+                'Payments',
+                'Products',
+                'Donations',
+                 'Categories',
+                 'Deliveries'
+            ])
             ->plugins([
                 FilamentBackgroundsPlugin::make()
                     ->showAttribution(false),

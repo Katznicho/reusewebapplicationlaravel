@@ -35,11 +35,11 @@ return [
         'consumer_secret' => env('PESAPAL_CONSUMER_SECRET'),
     ],
     'AT' => [
-        'AppName' => env("AT_APP_NAME"),
-        'apiKey' => env("AT_API_KEY")
+        'AppName' => env('AT_APP_NAME'),
+        'apiKey' => env('AT_API_KEY'),
     ],
     'FCM' => [
-        'fcm_token' => env("FCM_TOKEN")
-    ]
+        'fcm_token' => env('FCM_TOKEN'),
+    ],
 
 ];

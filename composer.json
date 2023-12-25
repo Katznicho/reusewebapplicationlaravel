@@ -20,6 +20,7 @@
         "swisnl/filament-backgrounds": "^1.1"
     },
     "require-dev": {
+        "doctrine/dbal": "^3.7",
         "fakerphp/faker": "^1.9.1",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.18",

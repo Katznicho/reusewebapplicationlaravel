@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Payments;
 
 use GuzzleHttp\Client;
@@ -8,6 +9,7 @@ use GuzzleHttp\Psr7\Response;
 class Curl
 {
     private static $client;
+
     private static $defaultHeaders = [];
 
     public static function initialize()
@@ -17,7 +19,7 @@ class Curl
 
     public static function Get($url, $headers = [])
     {
-        if (!self::$client) {
+        if (! self::$client) {
             self::initialize();
         }
 
@@ -25,7 +27,7 @@ class Curl
 
         try {
             $response = self::$client->request('GET', $url, [
-                'headers' => $headers
+                'headers' => $headers,
             ]);
 
             return self::processResponse($response);
@@ -37,16 +39,16 @@ class Curl
     public static function Post($url, $headers, $body)
     {
 
-        if (!self::$client) {
+        if (! self::$client) {
             self::initialize();
         }
-        
+
         $headers = array_merge(self::$defaultHeaders, $headers);
 
         try {
             $response = self::$client->request('POST', $url, [
                 'headers' => $headers,
-                'body' => $body
+                'body' => $body,
             ]);
 
             return self::processResponse($response);
@@ -58,16 +60,16 @@ class Curl
     public static function PostToken($url, $headers, $body)
     {
 
-        if (!self::$client) {
+        if (! self::$client) {
             self::initialize();
         }
-        
+
         $headers = array_merge(self::$defaultHeaders, $headers);
 
         try {
             $response = self::$client->request('POST', $url, [
                 'headers' => $headers,
-                'body' => $body
+                'body' => $body,
             ]);
 
             return self::processResponse($response);
@@ -90,10 +92,11 @@ class Curl
     private static function formatErrorResponse($errorMessage)
     {
         error_log($errorMessage);
+
         return [
             'success' => false,
             'message' => $errorMessage,
-            'client' => ''
+            'client' => '',
         ];
     }
 }

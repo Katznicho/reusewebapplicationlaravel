@@ -1,5 +1,9 @@
 <?php
 
+namespace App\Traits;
+
+
+
 trait SendPushNotification
 {
 
