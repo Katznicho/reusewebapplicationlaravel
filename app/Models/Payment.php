@@ -24,7 +24,7 @@ class Payment extends Model
         'OrderNotificationType',
         'user_id',
         'product_id',
-        'type'
+        'type',
 
     ];
 

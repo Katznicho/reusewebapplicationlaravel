@@ -1,6 +1,5 @@
 <?php
 
-
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,11 +13,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
-
 Route::prefix('v1')->group(function () {
-    include_once __DIR__ . '/custom/auth_routes.php';
-    include_once __DIR__ . '/custom/donator_routes.php';
-    include_once __DIR__ . '/custom/community_routes.php';
-    include_once __DIR__ . '/custom/payment_routes.php';
+    include_once __DIR__.'/custom/auth_routes.php';
+    include_once __DIR__.'/custom/donator_routes.php';
+    include_once __DIR__.'/custom/community_routes.php';
+    include_once __DIR__.'/custom/payment_routes.php';
 });

@@ -3,7 +3,6 @@
 namespace App\Payments;
 
 use App\Models\Payment;
-use App\Models\Transaction;
 use Illuminate\Support\Facades\Config;
 
 class Pesapal
@@ -48,7 +47,7 @@ class Pesapal
         try {
             //code...
             self::loadConfig();
-            $url = self::$pesapalBaseUrl . '/api/Auth/RequestToken';
+            $url = self::$pesapalBaseUrl.'/api/Auth/RequestToken';
             $headers = ['Content-Type' => 'application/json', 'accept' => 'application/json'];
             $body = json_encode([
                 'consumer_key' => self::$consumerKey,
@@ -73,12 +72,12 @@ class Pesapal
             //code...
             $token = self::pesapalAuth();
 
-            if (!$token->success) {
+            if (! $token->success) {
                 throw new \Exception('Failed to obtain Token');
             }
 
-            $url = self::$pesapalBaseUrl . '/api/URLSetup/RegisterIPN';
-            $headers = ['Content-Type' => 'application/json', 'accept' => 'application/json', 'Authorization' => 'Bearer ' . $token->message->token];
+            $url = self::$pesapalBaseUrl.'/api/URLSetup/RegisterIPN';
+            $headers = ['Content-Type' => 'application/json', 'accept' => 'application/json', 'Authorization' => 'Bearer '.$token->message->token];
 
             $body = json_encode([
                 'url' => $ipnUrl,
@@ -103,12 +102,12 @@ class Pesapal
             //code...
             $token = self::pesapalAuth();
 
-            if (!$token->success) {
+            if (! $token->success) {
                 throw new \Exception('Failed to obtain Token');
             }
 
-            $url = self::$pesapalBaseUrl . '/api/URLSetup/GetIpnList';
-            $headers = ['Content-Type' => 'application/json', 'accept' => 'application/json', 'Authorization' => 'Bearer ' . $token->message->token];
+            $url = self::$pesapalBaseUrl.'/api/URLSetup/GetIpnList';
+            $headers = ['Content-Type' => 'application/json', 'accept' => 'application/json', 'Authorization' => 'Bearer '.$token->message->token];
 
             $data = Curl::Get($url, $headers);
             $data = json_decode(json_encode($data));
@@ -120,7 +119,7 @@ class Pesapal
         }
     }
 
-    public static function orderProcess($reference, $amount, $phone, $description, $callback, $customer_names, $email, $customer_id, $cancel_url, $type, $mode = "App")
+    public static function orderProcess($reference, $amount, $phone, $description, $callback, $customer_names, $email, $customer_id, $cancel_url, $type, $mode = 'App')
     {
         try {
             //code...
@@ -143,11 +142,11 @@ class Pesapal
                 ],
             ]);
 
-            if (!$token->success) {
+            if (! $token->success) {
                 throw new \Exception('Failed to obtain Token');
             }
-            $url = self::$pesapalBaseUrl . '/api/Transactions/SubmitOrderRequest';
-            $headers = ['Content-Type' => 'application/json', 'accept' => 'application/json', 'Authorization' => 'Bearer ' . $token->message->token];
+            $url = self::$pesapalBaseUrl.'/api/Transactions/SubmitOrderRequest';
+            $headers = ['Content-Type' => 'application/json', 'accept' => 'application/json', 'Authorization' => 'Bearer '.$token->message->token];
             $data = Curl::Post($url, $headers, $payload);
 
             Payment::create([
@@ -178,18 +177,18 @@ class Pesapal
             //code...
             $transId = $oderTrackingId;
             // $merchant = $oderMerchantReference;
-            if (!isset($transId) || empty($transId)) {
+            if (! isset($transId) || empty($transId)) {
 
                 throw new \Exception('Missing Transaction ID');
             }
 
             $token = self::pesapalAuth();
-            if (!$token->success) {
+            if (! $token->success) {
                 return response()->json(['success' => false, 'message' => 'Failed to obtain Token', 'response' => $token]);
             }
 
-            $url = self::$pesapalBaseUrl . "/api/Transactions/GetTransactionStatus?orderTrackingId={$transId}";
-            $headers = ['Content-Type' => 'application/json', 'accept' => 'application/json', 'Authorization' => 'Bearer ' . $token->message->token];
+            $url = self::$pesapalBaseUrl."/api/Transactions/GetTransactionStatus?orderTrackingId={$transId}";
+            $headers = ['Content-Type' => 'application/json', 'accept' => 'application/json', 'Authorization' => 'Bearer '.$token->message->token];
             $data = Curl::Get($url, $headers);
 
             $data = json_decode(json_encode($data));

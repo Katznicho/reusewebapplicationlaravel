@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Mail\Payment as MailPayment;
+use App\Models\Donation;
 use App\Models\Payment;
+use App\Models\UserAccount;
 use App\Payments\Pesapal;
 use App\Traits\UserTrait;
 use Illuminate\Foundation\Auth\User;
@@ -16,7 +18,120 @@ use Throwable;
 class PaymentController extends Controller
 {
     use UserTrait;
+
+
+    private function  finishPaymentAndSendEmailByView(Payment $transaction, User $customer)
+    {
+        if ($transaction->type == config('status.payment_type.Donation')) {
+            //createOrUpdate Donation
+            Donation::updatedOrCreate(
+                ['payment_id' => $transaction->id],
+                [
+                    'name' => "Reuse Donation",
+                    'description' => $transaction->description,
+                    'user_id' => $customer->id,
+                    'is_annyomous' => $transaction->is_annyomous,
+                    'status' => config('status.payment_status.completed'),
+                    'payment_id' => $transaction->id,
+                    'amount' => $transaction->amount,
+                    'product_id' => $transaction->product_id,
+                ]
+            );
+            try {
+                Mail::to($customer->email)->send(new MailPayment($customer, 'Your Donation Has Been Successfully Completed', 'Donation Completed'));
+            } catch (Throwable $th) {
+                // throw $th;
+                Log::error($th);
+            }
+            return view('payments.finish');
+        } elseif ($transaction->type == config('status.payment_type.Wallet')) {
+
+            //update the current user account balance get the account balance from the user account and add the amount
+            $account = UserAccount::where('user_id', $customer->id)->first();
+            UserAccount::where('user_id', $customer->id)->update([
+                'account_balance' => $account->account_balance + $transaction->amount,
+            ]);
+
+            try {
+                Mail::to($customer->email)->send(new MailPayment($customer, 'Your Wallet Balance Has Been Successfully Updated', 'Wallet TopUp Completed'));
+            } catch (Throwable $th) {
+                // throw $th;
+                Log::error($th);
+            }
+            return view('payments.finish');
+        } elseif ($transaction->type == config('status.payment_type.Product')) {
+            try {
+                Mail::to($customer->email)->send(new MailPayment($customer, 'THe  product payment has been successfully completed', 'Product Payment Completed'));
+            } catch (Throwable $th) {
+                // throw $th;
+                Log::error($th);
+            }
+            return view('payments.finish');
+        } else {
+            return view('payments.finish');
+        }
+    }
     //
+    private function  finishPaymentAndSendEmailByJSON(Payment $transaction, User $customer)
+    {
+        if ($transaction->type == config('status.payment_type.Donation')) {
+            //createOrUpdate Donation
+            Donation::updatedOrCreate(
+                ['payment_id' => $transaction->id],
+                [
+                    'name' => "Reuse Donation",
+                    'description' => $transaction->description,
+                    'user_id' => $customer->id,
+                    'is_annyomous' => $transaction->is_annyomous,
+                    'status' => config('status.payment_status.completed'),
+                    'payment_id' => $transaction->id,
+                    'amount' => $transaction->amount,
+                    'product_id' => $transaction->product_id,
+                ]
+            );
+            try {
+                Mail::to($customer->email)->send(new MailPayment($customer, 'Your Donation Has Been Successfully Completed', 'Donation Completed'));
+            } catch (Throwable $th) {
+                // throw $th;
+                Log::error($th);
+            }
+            return view('payments.finish');
+        } elseif ($transaction->type == config('status.payment_type.Wallet')) {
+
+            //update the current user account balance get the account balance from the user account and add the amount
+            $account = UserAccount::where('user_id', $customer->id)->first();
+            UserAccount::where('user_id', $customer->id)->update([
+                'account_balance' => $account->account_balance + $transaction->amount,
+            ]);
+
+            try {
+                Mail::to($customer->email)->send(new MailPayment($customer, 'Your Wallet Balance Has Been Successfully Updated', 'Wallet TopUp Completed'));
+            } catch (Throwable $th) {
+                // throw $th;
+                Log::error($th);
+            }
+            return response()->json([
+                'status' => 200,
+                'message' => 'Transaction completed',
+            ]);
+        } elseif ($transaction->type == config('status.payment_type.Product')) {
+            try {
+                Mail::to($customer->email)->send(new MailPayment($customer, 'THe  product payment has been successfully completed', 'Product Payment Completed'));
+            } catch (Throwable $th) {
+                // throw $th;
+                Log::error($th);
+            }
+            return response()->json([
+                'status' => 200,
+                'message' => 'Transaction completed',
+            ]);
+        } else {
+            return response()->json([
+                'status' => 200,
+                'message' => 'Transaction completed',
+            ]);
+        }
+    }
     public function finishPayment(Request $request)
     {
         try {
@@ -32,7 +147,8 @@ class PaymentController extends Controller
             $transaction = Payment::where('reference', $reference)->first();
             if (!$transaction) {
                 Log::error('Transaction does not exist');
-                return view("payments.cancel");
+
+                return view('payments.cancel');
             }
             $customer = User::find($transaction->user_id);
             $data = Pesapal::transactionStatus($orderTrackingId, $orderTrackingId);
@@ -43,33 +159,30 @@ class PaymentController extends Controller
 
                 //check if the transaction is already completed
                 if ($transaction->status == config('status.payment_status.completed')) {
-                    return view('payments.finish');
-                } else {
 
+                    return $this->finishPaymentAndSendEmailByView($transaction, $customer);
+                } else {
                     $transaction->update([
                         'status' => config('status.payment_status.completed'),
                         'payment_method' => $payment_method,
                     ]);
-                    //update customer balance
-                    $customer->account_balance += $transaction->amount;
-                    $customer->save();
-
-                    return view('payments.finish');
+                    return $this->finishPaymentAndSendEmailByView($transaction, $customer);
                 }
 
                 // $this->sendMessage($)
 
             } else {
                 $transaction->update([
-                    'status' => config('status.payment_status.failed')
+                    'status' => config('status.payment_status.failed'),
                 ]);
                 try {
-                    Mail::to($customer->email)->send(new MailPayment($customer, 'Your Payment Failed', "Payment Failed"));
+                    Mail::to($customer->email)->send(new MailPayment($customer, 'Your Payment Failed', 'Payment Failed'));
                 } catch (Throwable $th) {
                     // throw $th;
                     Log::error($th);
                 }
-                return view("payments.cancel");
+
+                return view('payments.cancel');
             }
         } catch (\Throwable $th) {
             //throw $th;
@@ -156,29 +269,18 @@ class PaymentController extends Controller
             Log::info('==========================================call back executed============================================================================================================');
 
             if ($data->message->payment_status_description == config('status.payment_status.completed')) {
-                $message = "Hello {$customer->name} your payment of {$transaction->amount} has been successfully completed.Thank you";
-                $this->sendMessage($customer->phone_number, $message);
+
 
                 //check if the transaction is already completed
                 if ($transaction->status == config('status.payment_status.completed')) {
-                    return response()->json([
-                        'status' => 200,
-                        'message' => 'Transaction already completed',
-                    ]);
+                    return $this->finishPaymentAndSendEmailByJson($transaction, $customer);
                 } else {
 
                     $transaction->update([
                         'status' => 'completed',
                         'payment_method' => $payment_method,
                     ]);
-                    //update customer balance
-                    $customer->account_balance += $transaction->amount;
-                    $customer->save();
-
-                    return response()->json([
-                        'status' => 200,
-                        'message' => 'Transaction completed',
-                    ]);
+                    return $this->finishPaymentAndSendEmailByJson($transaction, $customer);
                 }
             }
         } catch (\Throwable $th) {

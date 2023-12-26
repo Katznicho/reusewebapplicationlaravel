@@ -11,11 +11,12 @@ class Donation extends Model
 
     protected $fillable = [
         'name',
-        'slug',
         'description',
         'user_id',
         'product_id',
         'is_annyomous',
         'status',
+        'payment_id',
+        'amount'
     ];
 }

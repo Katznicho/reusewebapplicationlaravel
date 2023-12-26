@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('payment_id')->nullable()->references('id')->on('payments')->cascadeOnDelete();
             $table->foreignId('product_id')->nullable()->references('id')->on('products')->constrained()->onDelete('cascade');
             $table->string('amount');
+            $table->string('status');
             $table->boolean('is_annyomous')->default(false);
             $table->timestamps();
         });
