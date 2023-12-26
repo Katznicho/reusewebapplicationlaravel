@@ -20,7 +20,7 @@ class StatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('success')
                 ->chart([7, 2, 10, 3, 15, 4, 9])
-                ->url(route("filament.admin.resources.users.index"))
+                ->url(route('filament.admin.resources.users.index'))
                 ->extraAttributes([
                     'class' => 'text-white text-lg cursor-pointer',
                 ]),
@@ -30,7 +30,7 @@ class StatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('success')
                 ->chart([7, 2, 10, 3, 15, 4, 9])
-                ->url(route("filament.admin.resources.payments.index"))
+                ->url(route('filament.admin.resources.payments.index'))
                 ->extraAttributes([
                     'class' => 'text-white text-lg cursor-pointer',
                 ]),
@@ -40,7 +40,7 @@ class StatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('success')
                 ->chart([7, 2, 10, 3, 15, 4, 9])
-                ->url(route("filament.admin.resources.donations.index"))
+                ->url(route('filament.admin.resources.donations.index'))
                 ->extraAttributes([
                     'class' => 'text-white text-lg cursor-pointer',
                 ]),
@@ -50,7 +50,7 @@ class StatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('success')
                 ->chart([7, 2, 10, 3, 15, 4, 9])
-                ->url(route("filament.admin.resources.categories.index"))
+                ->url(route('filament.admin.resources.categories.index'))
                 ->extraAttributes([
                     'class' => 'text-white text-lg cursor-pointer',
                 ]),
@@ -60,7 +60,7 @@ class StatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('success')
                 // ->chart([7, 2, 10, 3, 15, 4, 9])
-                ->url(route("filament.admin.resources.products.index"))
+                ->url(route('filament.admin.resources.products.index'))
                 ->extraAttributes([
                     'class' => 'text-white text-lg cursor-pointer',
                 ]),
@@ -70,7 +70,7 @@ class StatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('success')
                 // ->chart([7, 2, 10, 3, 15, 4, 9])
-                ->url(route("filament.admin.resources.deliveries.index"))
+                ->url(route('filament.admin.resources.deliveries.index'))
                 ->extraAttributes([
                     'class' => 'text-white text-lg cursor-pointer',
                 ]),
