@@ -17,9 +17,9 @@ return new class extends Migration
             $table->string('account_name');
             $table->string('account_currency');
             $table->string('account_balance')->default(0);
-            $table->string("pin");
+            $table->string('pin');
             $table->boolean('show_wallet_balance')->default(false);
-            $table->boolean("is_active")->default(false);
+            $table->boolean('is_active')->default(false);
             $table->softDeletes();
             $table->timestamps();
         });

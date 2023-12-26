@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\VerificationResource\Pages;
-use App\Filament\Resources\VerificationResource\RelationManagers;
 use App\Models\Verification;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -18,6 +17,7 @@ class VerificationResource extends Resource
     protected static ?string $model = Verification::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
     protected static ?string $navigationGroup = 'Users';
 
     public static function form(Form $form): Form

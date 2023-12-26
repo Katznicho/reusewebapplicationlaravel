@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\DonationResource\Pages;
-use App\Filament\Resources\DonationResource\RelationManagers;
 use App\Models\Donation;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -18,6 +17,7 @@ class DonationResource extends Resource
     protected static ?string $model = Donation::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
     protected static ?string $navigationGroup = 'Donations';
 
     public static function form(Form $form): Form

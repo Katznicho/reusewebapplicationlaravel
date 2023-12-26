@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserAccountResource\Pages;
-use App\Filament\Resources\UserAccountResource\RelationManagers;
 use App\Models\UserAccount;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -18,6 +17,7 @@ class UserAccountResource extends Resource
     protected static ?string $model = UserAccount::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
     protected static ?string $navigationGroup = 'Users';
 
     public static function form(Form $form): Form

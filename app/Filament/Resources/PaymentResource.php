@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PaymentResource\Pages;
-use App\Filament\Resources\PaymentResource\RelationManagers;
 use App\Models\Payment;
 use Carbon\Carbon;
 use Filament\Forms;
@@ -23,8 +22,8 @@ class PaymentResource extends Resource
     protected static ?string $model = Payment::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationGroup = 'Payments';
 
+    protected static ?string $navigationGroup = 'Payments';
 
     public static function form(Form $form): Form
     {
@@ -152,9 +151,9 @@ class PaymentResource extends Resource
                 //Tables\Filters\TrashedFilter::make(),
                 SelectFilter::make('status')
                     ->options([
-                        "pending" => "Pending",
-                        "completed" => "Completed",
-                        "failed" => "Failed",
+                        'pending' => 'Pending',
+                        'completed' => 'Completed',
+                        'failed' => 'Failed',
 
                     ])
                     ->label('Status'),
@@ -178,17 +177,17 @@ class PaymentResource extends Resource
                         $indicators = [];
 
                         if ($data['from'] ?? null) {
-                            $indicators[] = Indicator::make('Created from ' . Carbon::parse($data['from'])->toFormattedDateString())
+                            $indicators[] = Indicator::make('Created from '.Carbon::parse($data['from'])->toFormattedDateString())
                                 ->removeField('from');
                         }
 
                         if ($data['until'] ?? null) {
-                            $indicators[] = Indicator::make('Created until ' . Carbon::parse($data['until'])->toFormattedDateString())
+                            $indicators[] = Indicator::make('Created until '.Carbon::parse($data['until'])->toFormattedDateString())
                                 ->removeField('until');
                         }
 
                         return $indicators;
-                    })
+                    }),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

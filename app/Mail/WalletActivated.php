@@ -4,7 +4,6 @@ namespace App\Mail;
 
 use App\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -13,9 +12,13 @@ use Illuminate\Queue\SerializesModels;
 class WalletActivated extends Mailable
 {
     use Queueable, SerializesModels;
+
     private User $user;
+
     public string $subjectEmail;
+
     private string $body;
+
     /**
      * Create a new message instance.
      */
@@ -47,7 +50,7 @@ class WalletActivated extends Mailable
             markdown: 'mail.user.walletactivated',
             with: [
                 'user' => $this->user,
-                'body' => $this->body
+                'body' => $this->body,
             ]
         );
     }

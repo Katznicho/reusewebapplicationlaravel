@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserDeviceResource\Pages;
-use App\Filament\Resources\UserDeviceResource\RelationManagers;
 use App\Models\UserDevice;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -18,6 +17,7 @@ class UserDeviceResource extends Resource
     protected static ?string $model = UserDevice::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
     protected static ?string $navigationGroup = 'Users';
 
     public static function form(Form $form): Form

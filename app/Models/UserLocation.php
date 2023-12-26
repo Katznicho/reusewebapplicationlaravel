@@ -15,7 +15,7 @@ class UserLocation extends Model
         'location',
         'lat',
         'long',
-        'address'
+        'address',
     ];
 
     //belongs to the user

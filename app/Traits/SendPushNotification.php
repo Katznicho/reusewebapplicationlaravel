@@ -2,11 +2,8 @@
 
 namespace App\Traits;
 
-
-
 trait SendPushNotification
 {
-
     public string $fcm_server_key = config('services.FCM.fcm_token');
 
     //send a push notification to a user using their device token
@@ -14,7 +11,7 @@ trait SendPushNotification
     {
 
         $curl = curl_init();
-        curl_setopt_array($curl, array(
+        curl_setopt_array($curl, [
             CURLOPT_URL => 'https://fcm.googleapis.com/fcm/send',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
@@ -24,10 +21,10 @@ trait SendPushNotification
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => '{
-      "to": "' . $deviceToken . '",
+      "to": "'.$deviceToken.'",
       "notification":{
-    "title":"' . $title . '",
-     "body":"' . $message . '",
+    "title":"'.$title.'",
+     "body":"'.$message.'",
      "icon":"https://adfamedicareservices.com/wp-content/uploads/2022/11/rsz_cropped-rsz_cropped-adfa-logo-prooved-png.png",
      "color":"#ffffff",
     "sound":"default"
@@ -38,11 +35,11 @@ trait SendPushNotification
    }
 
 }',
-            CURLOPT_HTTPHEADER => array(
-                'Authorization: key=' . $this->fcm_server_key,
-                'Content-Type: application/json'
-            ),
-        ));
+            CURLOPT_HTTPHEADER => [
+                'Authorization: key='.$this->fcm_server_key,
+                'Content-Type: application/json',
+            ],
+        ]);
 
         $response = curl_exec($curl);
 

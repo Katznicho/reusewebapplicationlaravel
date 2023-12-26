@@ -17,7 +17,7 @@ class UserAccount extends Model
         'account_balance',
         'show_wallet_balance',
         'pin',
-        'is_active'
+        'is_active',
     ];
 
     //accont belongs to user

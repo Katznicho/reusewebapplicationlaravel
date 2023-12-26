@@ -42,7 +42,7 @@ class AuthController extends Controller
 
         // Create a new user
         $user = User::create([
-            'name' => $request->first_name . ' ' . $request->last_name,
+            'name' => $request->first_name.' '.$request->last_name,
             'email' => $request->email,
             'phone_number' => $this->formatMobileInternational($request->phone_number) ?? $request->phone_number,
             'otp' => Hash::make($otpCode),
@@ -53,8 +53,6 @@ class AuthController extends Controller
 
         // Create an auth token for the user
         $authToken = $user->createToken('authToken')->plainTextToken;
-
-
 
         try {
             // Send the OTP code to the user's email
@@ -75,20 +73,20 @@ class AuthController extends Controller
     {
         $request->validate([
             'email' => 'required|string|email|exists:users,email',
-            'otp' => 'required|size:6'
+            'otp' => 'required|size:6',
         ]);
 
         // Find the user
         $user = User::where('email', $request->email)->first();
 
         // Check if the OTP code is correct
-        if (!Hash::check($request->otp, $user->otp)) {
+        if (! Hash::check($request->otp, $user->otp)) {
             return response()->json([
                 'response' => 'failure',
                 'errors' => [
-                    'otp' => ['Incorrect OTP. Check your email for OTP sent to you']
+                    'otp' => ['Incorrect OTP. Check your email for OTP sent to you'],
                 ],
-                'message' => 'Incorrect OTP. Check your email for OTP sent to you'
+                'message' => 'Incorrect OTP. Check your email for OTP sent to you',
             ], 401);
         }
 
@@ -97,9 +95,9 @@ class AuthController extends Controller
             return response()->json([
                 'response' => 'failure',
                 'errors' => [
-                    'otp' => ['OTP code expired']
+                    'otp' => ['OTP code expired'],
                 ],
-                'message' => 'OTP code expired'
+                'message' => 'OTP code expired',
             ], 401);
         }
 
@@ -114,12 +112,11 @@ class AuthController extends Controller
         return response()->json([
             'response' => 'success',
             'message' => 'Successfully verified email!',
-            'user' => $user
+            'user' => $user,
         ], 200);
     }
 
-
-    // 
+    //
     // Resend OTP in case user didn't receive or it expired
     public function resendOTP(Request $request)
     {
@@ -141,7 +138,7 @@ class AuthController extends Controller
 
         try {
             // Send the OTP code to the user's email
-            Mail::to($user->email)->send(new UserVerification($user, $otpCode,));
+            Mail::to($user->email)->send(new UserVerification($user, $otpCode));
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -152,24 +149,23 @@ class AuthController extends Controller
         ], 201);
     }
 
-
-    // 
+    //
     // Login a user
     public function login(Request $request)
     {
         $request->validate([
             'email' => 'required|string|email',
-            'password' => 'required|string'
+            'password' => 'required|string',
         ]);
 
         // Find the user
         $user = User::where('email', $request->email)->first();
 
         // Check if the user exists and the password is correct
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             return response()->json([
                 'response' => 'failure',
-                'message' => 'Invalid credentials'
+                'message' => 'Invalid credentials',
             ], 401);
         }
 
@@ -180,7 +176,7 @@ class AuthController extends Controller
             'response' => 'success',
             'message' => 'Successfully logged in!',
             'user' => $user,
-            'authToken' => $authToken
+            'authToken' => $authToken,
         ], 200);
     }
 
@@ -191,12 +187,11 @@ class AuthController extends Controller
 
         return response()->json([
             'response' => 'success',
-            'message' => 'Successfully logged out!'
+            'message' => 'Successfully logged out!',
         ], 200);
     }
 
-
-    // 
+    //
     // Change a user's password
     public function changePassword(Request $request)
     {
@@ -209,13 +204,13 @@ class AuthController extends Controller
         $user = User::where('email', $request->user()->email)->first();
 
         // Check if the user exists and the password is correct
-        if (!$user || !Hash::check($request->old_password, $user->password)) {
+        if (! $user || ! Hash::check($request->old_password, $user->password)) {
             return response()->json([
                 'response' => 'failure',
                 'message' => 'Invalid credentials',
                 'errors' => [
-                    'old_password' => ['Invalid credentials']
-                ]
+                    'old_password' => ['Invalid credentials'],
+                ],
             ], 401);
         }
 
@@ -225,8 +220,8 @@ class AuthController extends Controller
                 'response' => 'failure',
                 'message' => 'New password cannot be the same as the old password',
                 'errors' => [
-                    'new_password' => ['New password cannot be the same as the old password']
-                ]
+                    'new_password' => ['New password cannot be the same as the old password'],
+                ],
             ], 401);
         }
 
@@ -240,8 +235,6 @@ class AuthController extends Controller
             'trainer' => $user->trainer,
         ], 200);
     }
-
-
 
     // Request a password reset
     public function requestPasswordReset(Request $request)
@@ -275,8 +268,7 @@ class AuthController extends Controller
         ], 201);
     }
 
-
-    // 
+    //
     // Reset a user's password
     public function resetPassword(Request $request)
     {
@@ -291,13 +283,13 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         // Check if the OTP code is correct
-        if (!Hash::check($request->otp, $user->otp)) {
+        if (! Hash::check($request->otp, $user->otp)) {
             return response()->json([
                 'response' => 'failure',
                 'message' => 'Incorrect OTP. Check your email for OTP sent to you',
                 'errors' => [
-                    'otp' => ['Incorrect OTP. Check your email for OTP sent to you']
-                ]
+                    'otp' => ['Incorrect OTP. Check your email for OTP sent to you'],
+                ],
             ], 401);
         }
 
@@ -307,8 +299,8 @@ class AuthController extends Controller
                 'response' => 'failure',
                 'message' => 'OTP code expired',
                 'errors' => [
-                    'otp' => ['OTP code expired']
-                ]
+                    'otp' => ['OTP code expired'],
+                ],
             ], 401);
         }
 
@@ -316,7 +308,7 @@ class AuthController extends Controller
         $user->update([
             'otp' => null,
             'otp_send_time' => null,
-            'password' => Hash::make($request->new_password)
+            'password' => Hash::make($request->new_password),
         ]);
 
         // Delete all the user's auth tokens
@@ -329,12 +321,11 @@ class AuthController extends Controller
             'response' => 'success',
             'message' => 'Successfully reset password!',
             'authToken' => $authToken,
-            'user' => $user
+            'user' => $user,
         ], 200);
     }
 
-
-    // 
+    //
     // Update user avatar
     public function updateAvatar(Request $request)
     {
@@ -346,10 +337,10 @@ class AuthController extends Controller
         $user = User::where('id', $request->user()->id)->first();
 
         // Check if the user exists
-        if (!$user) {
+        if (! $user) {
             return response()->json([
                 'response' => 'failure',
-                'message' => 'User does not exist'
+                'message' => 'User does not exist',
             ], 401);
         }
 
@@ -360,14 +351,14 @@ class AuthController extends Controller
         return response()->json([
             'response' => 'success',
             'message' => 'Successfully updated avatar!',
-            'user' => $user
+            'user' => $user,
         ], 200);
     }
 
     public function setUpUserWalletAccount(Request $request)
     {
         $request->validate([
-            'pin' => 'required|string|min:4|max:4'
+            'pin' => 'required|string|min:4|max:4',
         ]);
         $user = $this->getCurrentLoggedUserBySanctum();
         if ($user) {
@@ -384,16 +375,14 @@ class AuthController extends Controller
                     'account_balance' => 0,
                     'show_wallet_balance' => false,
                     'pin' => Hash::make($request->pin),
-                    'is_active' => true
+                    'is_active' => true,
                 ]
             );
 
-            $message = "Hello " . $user->name . ", your wallet account has been successfully created. Your account balance is 0";
-
-
+            $message = 'Hello '.$user->name.', your wallet account has been successfully created. Your account balance is 0';
 
             try {
-                Mail::to($user->email)->send(new WalletActivated($user, "Wallet Activated", $message));
+                Mail::to($user->email)->send(new WalletActivated($user, 'Wallet Activated', $message));
             } catch (Throwable $th) {
                 // throw $th;
                 Log::error($th);
@@ -406,18 +395,14 @@ class AuthController extends Controller
             //     $this->sendPushNotification($device_token[0]->push_token, "Wallet Activated", $message);
             // }
 
-
-
-
-
             return response()->json([
                 'response' => 'success',
-                'message' => 'Wallet account successfully created!'
+                'message' => 'Wallet account successfully created!',
             ]);
         } else {
             return response()->json([
                 'response' => 'failure',
-                'message' => 'User does not exist'
+                'message' => 'User does not exist',
             ], 401);
         }
     }
@@ -435,28 +420,27 @@ class AuthController extends Controller
             // Find the customer
             $customer = User::find($user->id);
 
-
-            if (!$customer) {
+            if (! $customer) {
                 return response()->json([
                     'response' => 'failure',
-                    'message' => 'Invalid credentials'
+                    'message' => 'Invalid credentials',
                 ], 401);
             }
             $hashed_odPin = Hash::make($request->odPin);
             if ($hashed_odPin != $customer->pin) {
                 return response()->json([
                     'response' => 'failure',
-                    'message' => 'Invalid credentials'
+                    'message' => 'Invalid credentials',
                 ], 401);
             }
             $hashed_newPin = Hash::make($request->newPin);
             $customer->pin = $hashed_newPin;
             $customer->save();
             //send message to customer
-            $message = "Your new wallet  pin is " . $request->newPin . "If you did not make this request, please contact us.";
+            $message = 'Your new wallet  pin is '.$request->newPin.'If you did not make this request, please contact us.';
             $this->sendMessage($customer->phone_number, $message);
             try {
-                Mail::to($user->email)->send(new WalletActivated($customer, "Wallet Activated", $message));
+                Mail::to($user->email)->send(new WalletActivated($customer, 'Wallet Activated', $message));
             } catch (Throwable $th) {
                 // throw $th;
                 Log::error($th);
@@ -466,16 +450,17 @@ class AuthController extends Controller
             //send them a push notification
             $device_token = UserDevice::where('user_id', $user->id)->pluck('device_token')->get();
             if ($device_token) {
-                $this->sendPushNotification($device_token, "Wallet Activated", $message);
+                $this->sendPushNotification($device_token, 'Wallet Activated', $message);
             }
+
             return response()->json([
                 'response' => 'success',
-                'customer' => $customer
+                'customer' => $customer,
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
                 'response' => 'failure',
-                'message' => $th->getMessage()
+                'message' => $th->getMessage(),
             ], 500);
         }
     }
@@ -533,7 +518,6 @@ class AuthController extends Controller
         return response()->json(['response' => 'success', 'message' => 'Device token saved successfully.']);
     }
 
-
     public function saveOrUpdateUserLocation(Request $request)
     {
         $request->validate([
@@ -545,6 +529,7 @@ class AuthController extends Controller
             ['user_id' => $user->id],
             ['lat' => $request->lat, 'long' => $request->long]
         );
+
         return response()->json(['response' => 'success', 'message' => 'Location updated successfully.']);
     }
 }

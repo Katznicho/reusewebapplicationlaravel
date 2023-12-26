@@ -15,7 +15,7 @@ Route::prefix('auth')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('setUpUserWalletAccount', [AuthController::class, 'setUpUserWalletAccount']);
         Route::post('changeCustomerPin', [AuthController::class, 'changeCustomerPin']);
-        Route::post("saveOrUpdateUserLocation", [AuthController::class, "saveOrUpdateUserLocation"]);
+        Route::post('saveOrUpdateUserLocation', [AuthController::class, 'saveOrUpdateUserLocation']);
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('changePassword', [AuthController::class, 'changePassword']);
         Route::post('updateAvatar', [AuthController::class, 'updateAvatar']);

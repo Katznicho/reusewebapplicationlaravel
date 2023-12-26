@@ -5,8 +5,8 @@ namespace App\Filament\Resources\UserAccountResource\Pages;
 use App\Filament\Resources\UserAccountResource;
 use Carbon\Carbon;
 use Filament\Actions;
-use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Components\Tab;
+use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 
 class ListUserAccounts extends ListRecords

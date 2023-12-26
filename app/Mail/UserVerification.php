@@ -4,7 +4,6 @@ namespace App\Mail;
 
 use App\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -15,6 +14,7 @@ class UserVerification extends Mailable
     use Queueable, SerializesModels;
 
     public User $user;
+
     public string $verificationCode;
 
     /**
@@ -47,7 +47,7 @@ class UserVerification extends Mailable
             with: [
                 'user' => $this->user,
                 'verificationCode' => $this->verificationCode,
-        ],
+            ],
         );
     }
 

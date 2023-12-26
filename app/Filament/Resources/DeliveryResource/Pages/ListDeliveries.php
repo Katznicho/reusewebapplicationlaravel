@@ -5,8 +5,8 @@ namespace App\Filament\Resources\DeliveryResource\Pages;
 use App\Filament\Resources\DeliveryResource;
 use Carbon\Carbon;
 use Filament\Actions;
-use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Components\Tab;
+use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 
 class ListDeliveries extends ListRecords

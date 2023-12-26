@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserLocationResource\Pages;
-use App\Filament\Resources\UserLocationResource\RelationManagers;
 use App\Models\UserLocation;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -18,6 +17,7 @@ class UserLocationResource extends Resource
     protected static ?string $model = UserLocation::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
     protected static ?string $navigationGroup = 'Users';
 
     public static function form(Form $form): Form
