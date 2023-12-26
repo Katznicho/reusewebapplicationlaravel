@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('description')->nullable();
             $table->foreignId('user_id')->nullable()->references('id')->on('users')->constrained()->onDelete('cascade');
+            $table->foreignId('payment_id')->nullable()->references('id')->on('payments')->cascadeOnDelete();
             $table->foreignId('product_id')->nullable()->references('id')->on('products')->constrained()->onDelete('cascade');
             $table->string('amount');
             $table->boolean('is_annyomous')->default(false);

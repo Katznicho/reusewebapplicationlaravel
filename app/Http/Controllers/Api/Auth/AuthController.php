@@ -42,7 +42,7 @@ class AuthController extends Controller
 
         // Create a new user
         $user = User::create([
-            'name' => $request->first_name.' '.$request->last_name,
+            'name' => $request->first_name . ' ' . $request->last_name,
             'email' => $request->email,
             'phone_number' => $this->formatMobileInternational($request->phone_number) ?? $request->phone_number,
             'otp' => Hash::make($otpCode),
@@ -80,7 +80,7 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         // Check if the OTP code is correct
-        if (! Hash::check($request->otp, $user->otp)) {
+        if (!Hash::check($request->otp, $user->otp)) {
             return response()->json([
                 'response' => 'failure',
                 'errors' => [
@@ -162,10 +162,25 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         // Check if the user exists and the password is correct
-        if (! $user || ! Hash::check($request->password, $user->password)) {
+        if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'response' => 'failure',
                 'message' => 'Invalid credentials',
+            ], 401);
+        }
+
+        //check if the user verified their email
+        if (!$user->is_verified) {
+            $otpCode = random_int(100000, 999999);
+            try {
+                // Send the OTP code to the user's email
+                Mail::to($user->email)->send(new UserVerification($user, $otpCode));
+            } catch (\Throwable $th) {
+                throw $th;
+            }
+            return response()->json([
+                'response' => 'failure',
+                'message' => 'Please verify your email',
             ], 401);
         }
 
@@ -204,7 +219,7 @@ class AuthController extends Controller
         $user = User::where('email', $request->user()->email)->first();
 
         // Check if the user exists and the password is correct
-        if (! $user || ! Hash::check($request->old_password, $user->password)) {
+        if (!$user || !Hash::check($request->old_password, $user->password)) {
             return response()->json([
                 'response' => 'failure',
                 'message' => 'Invalid credentials',
@@ -283,7 +298,7 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         // Check if the OTP code is correct
-        if (! Hash::check($request->otp, $user->otp)) {
+        if (!Hash::check($request->otp, $user->otp)) {
             return response()->json([
                 'response' => 'failure',
                 'message' => 'Incorrect OTP. Check your email for OTP sent to you',
@@ -337,7 +352,7 @@ class AuthController extends Controller
         $user = User::where('id', $request->user()->id)->first();
 
         // Check if the user exists
-        if (! $user) {
+        if (!$user) {
             return response()->json([
                 'response' => 'failure',
                 'message' => 'User does not exist',
@@ -379,7 +394,7 @@ class AuthController extends Controller
                 ]
             );
 
-            $message = 'Hello '.$user->name.', your wallet account has been successfully created. Your account balance is 0';
+            $message = 'Hello ' . $user->name . ', your wallet account has been successfully created. Your account balance is 0';
 
             try {
                 Mail::to($user->email)->send(new WalletActivated($user, 'Wallet Activated', $message));
@@ -420,7 +435,7 @@ class AuthController extends Controller
             // Find the customer
             $customer = User::find($user->id);
 
-            if (! $customer) {
+            if (!$customer) {
                 return response()->json([
                     'response' => 'failure',
                     'message' => 'Invalid credentials',
@@ -437,7 +452,7 @@ class AuthController extends Controller
             $customer->pin = $hashed_newPin;
             $customer->save();
             //send message to customer
-            $message = 'Your new wallet  pin is '.$request->newPin.'If you did not make this request, please contact us.';
+            $message = 'Your new wallet  pin is ' . $request->newPin . 'If you did not make this request, please contact us.';
             $this->sendMessage($customer->phone_number, $message);
             try {
                 Mail::to($user->email)->send(new WalletActivated($customer, 'Wallet Activated', $message));
