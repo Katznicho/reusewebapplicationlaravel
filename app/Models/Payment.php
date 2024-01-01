@@ -25,6 +25,8 @@ class Payment extends Model
         'user_id',
         'product_id',
         'type',
+        'donation_id',
+        'delivery_id'
 
     ];
 
@@ -47,5 +49,9 @@ class Payment extends Model
         return $this->belongsTo(Delivery::class);
     }
 
-    //
+    //payment belongs to a donation as well
+    public function donation(): BelongsTo
+    {
+        return $this->belongsTo(Donation::class);
+    }
 }

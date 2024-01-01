@@ -19,15 +19,14 @@ class PaymentController extends Controller
 {
     use UserTrait;
 
-
-    private function  finishPaymentAndSendEmailByView(Payment $transaction, User $customer)
+    private function finishPaymentAndSendEmailByView(Payment $transaction,  $customer)
     {
         if ($transaction->type == config('status.payment_type.Donation')) {
             //createOrUpdate Donation
-            Donation::updatedOrCreate(
+            Donation::updateOrCreate(
                 ['payment_id' => $transaction->id],
                 [
-                    'name' => "Reuse Donation",
+                    'name' => 'Reuse Donation',
                     'description' => $transaction->description,
                     'user_id' => $customer->id,
                     'is_annyomous' => $transaction->is_annyomous,
@@ -43,6 +42,7 @@ class PaymentController extends Controller
                 // throw $th;
                 Log::error($th);
             }
+
             return view('payments.finish');
         } elseif ($transaction->type == config('status.payment_type.Wallet')) {
 
@@ -58,6 +58,7 @@ class PaymentController extends Controller
                 // throw $th;
                 Log::error($th);
             }
+
             return view('payments.finish');
         } elseif ($transaction->type == config('status.payment_type.Product')) {
             try {
@@ -66,20 +67,22 @@ class PaymentController extends Controller
                 // throw $th;
                 Log::error($th);
             }
+
             return view('payments.finish');
         } else {
             return view('payments.finish');
         }
     }
+
     //
-    private function  finishPaymentAndSendEmailByJSON(Payment $transaction, User $customer)
+    private function finishPaymentAndSendEmailByJSON(Payment $transaction,  $customer)
     {
         if ($transaction->type == config('status.payment_type.Donation')) {
             //createOrUpdate Donation
-            Donation::updatedOrCreate(
+            $donation = Donation::updateOrCreate(
                 ['payment_id' => $transaction->id],
                 [
-                    'name' => "Reuse Donation",
+                    'name' => 'Reuse Donation',
                     'description' => $transaction->description,
                     'user_id' => $customer->id,
                     'is_annyomous' => $transaction->is_annyomous,
@@ -89,13 +92,22 @@ class PaymentController extends Controller
                     'product_id' => $transaction->product_id,
                 ]
             );
+            //update the payment with the donation id
+            Payment::where('id', $transaction->id)->update([
+                'donation_id' => $donation->id
+            ]);
             try {
                 Mail::to($customer->email)->send(new MailPayment($customer, 'Your Donation Has Been Successfully Completed', 'Donation Completed'));
             } catch (Throwable $th) {
                 // throw $th;
                 Log::error($th);
             }
-            return view('payments.finish');
+
+            // return view('payments.finish');
+            return response()->json([
+                'status' => 200,
+                'message' => 'Transaction completed',
+            ]);
         } elseif ($transaction->type == config('status.payment_type.Wallet')) {
 
             //update the current user account balance get the account balance from the user account and add the amount
@@ -110,6 +122,7 @@ class PaymentController extends Controller
                 // throw $th;
                 Log::error($th);
             }
+
             return response()->json([
                 'status' => 200,
                 'message' => 'Transaction completed',
@@ -121,6 +134,7 @@ class PaymentController extends Controller
                 // throw $th;
                 Log::error($th);
             }
+
             return response()->json([
                 'status' => 200,
                 'message' => 'Transaction completed',
@@ -132,6 +146,7 @@ class PaymentController extends Controller
             ]);
         }
     }
+
     public function finishPayment(Request $request)
     {
         try {
@@ -160,13 +175,17 @@ class PaymentController extends Controller
                 //check if the transaction is already completed
                 if ($transaction->status == config('status.payment_status.completed')) {
 
-                    return $this->finishPaymentAndSendEmailByView($transaction, $customer);
+                    // return $this->finishPaymentAndSendEmailByView($transaction, $customer);
+                    return view('payments.finish');
                 } else {
                     $transaction->update([
                         'status' => config('status.payment_status.completed'),
                         'payment_method' => $payment_method,
                     ]);
-                    return $this->finishPaymentAndSendEmailByView($transaction, $customer);
+
+                    // return $this->finishPaymentAndSendEmailByView($transaction, $customer);
+                    // return view('payments.cancel');
+                    return view('payments.finish');
                 }
 
                 // $this->sendMessage($)
@@ -260,7 +279,7 @@ class PaymentController extends Controller
                     'message' => 'Transaction not found',
                 ]);
             }
-            $customer = User::find($transaction->customer_id);
+            $customer = User::find($transaction->user_id);
             $data = Pesapal::transactionStatus($orderTrackingId, $orderTrackingId);
             $payment_method = $data->message->payment_method;
 
@@ -270,16 +289,16 @@ class PaymentController extends Controller
 
             if ($data->message->payment_status_description == config('status.payment_status.completed')) {
 
-
                 //check if the transaction is already completed
                 if ($transaction->status == config('status.payment_status.completed')) {
                     return $this->finishPaymentAndSendEmailByJson($transaction, $customer);
                 } else {
 
                     $transaction->update([
-                        'status' => 'completed',
+                        'status' => config('status.payment_status.completed'),
                         'payment_method' => $payment_method,
                     ]);
+
                     return $this->finishPaymentAndSendEmailByJson($transaction, $customer);
                 }
             }
@@ -368,6 +387,47 @@ class PaymentController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
 
+            return response()->json(['success' => false, 'message' => $th->getMessage()]);
+        }
+    }
+
+    //get all current logged in user transactions 
+    public function getUserPayments(Request $request)
+    {
+        try {
+            //code...
+            $limit = $request->input('limit', 100);
+            $page = $request->input('page', 1);
+            $sortOrder = $request->input('sort_order', 'desc');
+            $user_id = $this->getCurrentLoggedUserBySanctum()->id;
+
+            // Add a status filter if 'status' is provided in the request
+            $status = $request->input('status');
+            $paymentQuery = Payment::where('user_id', $user_id);
+
+            if (!empty($status)) {
+                $paymentQuery->where('status', $status);
+            }
+
+            $res = $paymentQuery->orderBy('id', $sortOrder)->with([
+                'user',
+                'product',
+                'donation',
+                'delivery'
+            ])->paginate($limit, ['*'], 'page', $page);
+
+            $response = [
+                "payments" => $res->items(),
+                "pagination" => [
+                    'current_page' => $res->currentPage(),
+                    'per_page' => $limit,
+                    'total' => $res->total(),
+                ]
+            ];
+
+            return response()->json(['success' => true, 'data' => $response]);
+        } catch (\Throwable $th) {
+            //throw $th;
             return response()->json(['success' => false, 'message' => $th->getMessage()]);
         }
     }

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Donation extends Model
 {
@@ -17,6 +19,18 @@ class Donation extends Model
         'is_annyomous',
         'status',
         'payment_id',
-        'amount'
+        'amount',
     ];
+
+    //a donation belongs to a user
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    // a donation has a payment
+    public function payment(): HasOne
+    {
+        return $this->hasOne(Payment::class, 'donation_id', 'id');
+    }
 }

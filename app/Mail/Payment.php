@@ -13,7 +13,7 @@ class Payment extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public User $user;
+    public  $user;
 
     public string $paymentStatus;
 
@@ -22,7 +22,7 @@ class Payment extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(User $user, string $message, string $paymentStatus)
+    public function __construct($user, string $message, string $paymentStatus)
     {
         //
         $this->user = $user;
