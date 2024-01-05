@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Delivery;
 use App\Models\Product;
+use App\Traits\UserTrait;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
+    use UserTrait;
     /**
      * Display a listing of the resource.
      */
@@ -84,16 +86,16 @@ class ProductController extends Controller
             $res = $paymentQuery->orderBy('id', $sortOrder)->with([
                 'user',
                 'delivery',
-                'category'
+                'category',
             ])->paginate($limit, ['*'], 'page', $page);
 
             $response = [
-                "products" => $res->items(),
-                "pagination" => [
+                'data' => $res->items(),
+                'pagination' => [
                     'current_page' => $res->currentPage(),
                     'per_page' => $limit,
                     'total' => $res->total(),
-                ]
+                ],
             ];
 
             return response()->json(['success' => true, 'data' => $response]);
@@ -127,12 +129,12 @@ class ProductController extends Controller
             ])->paginate($limit, ['*'], 'page', $page);
 
             $response = [
-                "deliveries" => $res->items(),
-                "pagination" => [
+                'data' => $res->items(),
+                'pagination' => [
                     'current_page' => $res->currentPage(),
                     'per_page' => $limit,
                     'total' => $res->total(),
-                ]
+                ],
             ];
 
             return response()->json(['success' => true, 'data' => $response]);
@@ -144,35 +146,44 @@ class ProductController extends Controller
 
     public function createProduct(Request $request)
     {
+        // return $request->images;
         try {
             $request->validate([
                 'name' => 'required',
                 'description' => 'required',
                 'price' => 'required',
                 'cover_image' => 'required',
-                'images' => 'required',
+                'images' => 'required|array|min:1',
                 'pick_up_location' => 'required',
                 'weight' => 'required',
                 'is_delivery_available' => 'required|boolean',
                 'is_donation' => 'required|boolean',
                 'is_product_new' => 'required|boolean',
                 'is_product_available_for_all' => 'required|boolean',
-                'is_product_damaged' => 'required|boolean',
-                'is_product_rejected' => 'required|boolean',
-                'is_product_accepted' => 'required|boolean',
-                'status' => 'required',
-                'total_amount' => 'required',
-                'user_id' => 'required',
+                //'status' => 'required',
                 'category_id' => 'required',
-
-
             ]);
+
+            //if is_product_available_for_all is false then we need the community_id
+            if ($request->is_product_available_for_all == false) {
+                $request->validate([
+                    'community_id' => 'required',
+                ]);
+            }
+
+            //if the  product is damaged we need the damage_description
+            if ($request->is_product_damaged) {
+                $request->validate([
+                    'damage_description' => 'required',
+                ]);
+            }
+
             $res = Product::create([
                 'name' => $request->name,
                 'description' => $request->description,
                 'price' => $request->price,
                 'cover_image' => $request->cover_image,
-                'images' => $request->images,
+                'images' => json_encode($request->images),
                 'pick_up_location' => $request->pick_up_location,
                 'weight' => $request->weight,
                 'is_delivery_available' => $request->is_delivery_available,
@@ -180,7 +191,12 @@ class ProductController extends Controller
                 'is_product_new' => $request->is_product_new,
                 'is_product_available_for_all' => $request->is_product_available_for_all,
                 'is_product_damaged' => $request->is_product_damaged,
-                'is_product_rejected' => $request->is_product_rejected,
+                'category_id' => $request->category_id,
+                'user_id' => $this->getCurrentLoggedUserBySanctum()->id,
+                'community_id' => $request->community_id,
+                'damage_description' => $request->damage_description,
+                'status' => config("status.product_status.Pending")
+
             ]);
             if ($res) {
                 return response()->json(['success' => true, 'message' => 'Product created successfully', 'data' => $res]);

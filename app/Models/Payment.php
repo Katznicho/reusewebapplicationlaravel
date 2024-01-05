@@ -26,7 +26,7 @@ class Payment extends Model
         'product_id',
         'type',
         'donation_id',
-        'delivery_id'
+        'delivery_id',
 
     ];
 

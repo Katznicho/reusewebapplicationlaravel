@@ -19,7 +19,7 @@ class PaymentController extends Controller
 {
     use UserTrait;
 
-    private function finishPaymentAndSendEmailByView(Payment $transaction,  $customer)
+    private function finishPaymentAndSendEmailByView(Payment $transaction, $customer)
     {
         if ($transaction->type == config('status.payment_type.Donation')) {
             //createOrUpdate Donation
@@ -75,7 +75,7 @@ class PaymentController extends Controller
     }
 
     //
-    private function finishPaymentAndSendEmailByJSON(Payment $transaction,  $customer)
+    private function finishPaymentAndSendEmailByJSON(Payment $transaction, $customer)
     {
         if ($transaction->type == config('status.payment_type.Donation')) {
             //createOrUpdate Donation
@@ -94,7 +94,7 @@ class PaymentController extends Controller
             );
             //update the payment with the donation id
             Payment::where('id', $transaction->id)->update([
-                'donation_id' => $donation->id
+                'donation_id' => $donation->id,
             ]);
             try {
                 Mail::to($customer->email)->send(new MailPayment($customer, 'Your Donation Has Been Successfully Completed', 'Donation Completed'));
@@ -160,7 +160,7 @@ class PaymentController extends Controller
             ]);
             //get the actual transaction
             $transaction = Payment::where('reference', $reference)->first();
-            if (!$transaction) {
+            if (! $transaction) {
                 Log::error('Transaction does not exist');
 
                 return view('payments.cancel');
@@ -188,7 +188,7 @@ class PaymentController extends Controller
                     return view('payments.finish');
                 }
 
-                // $this->sendMessage($)
+            // $this->sendMessage($)
 
             } else {
                 $transaction->update([
@@ -273,7 +273,7 @@ class PaymentController extends Controller
             ]);
 
             $transaction = Payment::where('reference', $orderMerchantReference)->first();
-            if (!$transaction) {
+            if (! $transaction) {
                 return response()->json([
                     'status' => 500,
                     'message' => 'Transaction not found',
@@ -325,7 +325,7 @@ class PaymentController extends Controller
             ]);
             $getCustomer = $this->getCurrentLoggedUserBySanctum();
 
-            if (!$getCustomer) {
+            if (! $getCustomer) {
                 return response()->json(['success' => false, 'message' => 'Customer not found']);
             }
             $amount = $request->input('amount');
@@ -338,7 +338,7 @@ class PaymentController extends Controller
             $customer_id = $getCustomer->id;
             $cancel_url = $request->input('cancel_url');
             //add the payment reference to cancel url
-            $cancel_url = $cancel_url . '?payment_reference=' . $reference;
+            $cancel_url = $cancel_url.'?payment_reference='.$reference;
             $payment_type = $request->input('payment_type');
             // return $payment_type;
             // return $amount;
@@ -391,7 +391,7 @@ class PaymentController extends Controller
         }
     }
 
-    //get all current logged in user transactions 
+    //get all current logged in user transactions
     public function getUserPayments(Request $request)
     {
         try {
@@ -405,7 +405,7 @@ class PaymentController extends Controller
             $status = $request->input('status');
             $paymentQuery = Payment::where('user_id', $user_id);
 
-            if (!empty($status)) {
+            if (! empty($status)) {
                 $paymentQuery->where('status', $status);
             }
 
@@ -413,16 +413,16 @@ class PaymentController extends Controller
                 'user',
                 'product',
                 'donation',
-                'delivery'
+                'delivery',
             ])->paginate($limit, ['*'], 'page', $page);
 
             $response = [
-                "payments" => $res->items(),
-                "pagination" => [
+                'payments' => $res->items(),
+                'pagination' => [
                     'current_page' => $res->currentPage(),
                     'per_page' => $limit,
                     'total' => $res->total(),
-                ]
+                ],
             ];
 
             return response()->json(['success' => true, 'data' => $response]);

@@ -31,6 +31,9 @@ class Product extends Model
         'total_amount',
         'user_id',
         'category_id',
+        'payment_id',
+        'delivery_id',
+        'community_id'
 
     ];
 

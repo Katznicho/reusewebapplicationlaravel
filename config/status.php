@@ -13,5 +13,13 @@ return [
         'Wallet' => 'Wallet',
         'Other' => 'Other',
     ],
+    'product_status' => [
+        'Available' => 'Available',
+        'Unavailable' => 'Unavailable',
+        'Pending'=>'Pending',
+        'Rejected'=>'Rejected',
+        'Accepted'=>'Accepted',
+        
+    ],
 
 ];

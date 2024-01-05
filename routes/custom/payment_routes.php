@@ -1,11 +1,10 @@
 <?php
 
-
 use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get("getUserPayments", [PaymentController::class, "getUserPayments"]);
+    Route::get('getUserPayments', [PaymentController::class, 'getUserPayments']);
 
     Route::post('processOrder', [PaymentController::class, 'processOrder']);
 

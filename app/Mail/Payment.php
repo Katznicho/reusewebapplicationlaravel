@@ -2,7 +2,6 @@
 
 namespace App\Mail;
 
-use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -13,7 +12,7 @@ class Payment extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public  $user;
+    public $user;
 
     public string $paymentStatus;
 

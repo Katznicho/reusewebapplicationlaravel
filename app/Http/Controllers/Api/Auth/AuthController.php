@@ -69,6 +69,53 @@ class AuthController extends Controller
         ], 201);
     }
 
+    public function registerCommunity(Request $request)
+    {
+        $request->validate([
+            'community_name' => 'required|string|unique:users,name,except,id',
+            'email' => 'required|string|email|unique:users,email,except,id',
+            'phone_number' => 'required|string|unique:users,phone_number,except,id',
+            'password' => 'required|string|min:6',
+            'confirm_password' => 'required|string|same:password',
+            'role' => 'required',
+        ]);
+
+        // Generate a random OTP code
+        // $otpCode = 123456;
+        $otpCode = random_int(100000, 999999);
+
+        // Create a new user
+        $user = User::create([
+            'name' => $request->community_name,
+            'email' => $request->email,
+            'phone_number' => $this->formatMobileInternational($request->phone_number) ?? $request->phone_number,
+            'otp' => Hash::make($otpCode),
+            'otp_send_time' => now(),
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
+        ]);
+
+        // Create an auth token for the user
+        $authToken = $user->createToken('authToken')->plainTextToken;
+
+        try {
+            // Send the OTP code to the user's email
+            Mail::to($user->email)->send(new UserVerification($user, $otpCode));
+        } catch (\Throwable $th) {
+            // throw $th;
+        }
+
+        return response()->json([
+            'response' => 'success',
+            'message' => 'Successfully created user!',
+            'user' => $user,
+            'authToken' => $authToken,
+        ], 201);
+    }
+
+
+
+
     public function verifyEmail(Request $request)
     {
         $request->validate([
@@ -454,7 +501,7 @@ class AuthController extends Controller
         try {
             $request->validate([
                 'pin' => 'required|string|min:4|max:4',
-                'show_wallet_balance' => "required"
+                'show_wallet_balance' => 'required',
             ]);
             //check if pins match
             $user = $this->getCurrentLoggedUserBySanctum();
@@ -476,6 +523,7 @@ class AuthController extends Controller
                 if (Hash::check($request->pin, $wallet->pin)) {
                     $wallet->show_wallet_balance = $request->show_wallet_balance;
                     $wallet->save();
+
                     return response()->json([
                         'response' => 'success',
                         'message' => 'Show Wallet has been updated',

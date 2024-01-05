@@ -4,10 +4,15 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProductResource\Pages;
 use App\Models\Product;
+use Carbon\Carbon;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\Indicator;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -22,6 +27,7 @@ class ProductResource extends Resource
 
     public static function form(Form $form): Form
     {
+
         return $form
             ->schema([
                 Forms\Components\Select::make('user_id')
@@ -84,19 +90,55 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('cover_image')
+                    ->label('Cover Image')
+                    ->circular(),
+                Tables\Columns\ImageColumn::make('images')
+                    ->label('Images')
+                    ->circular()
+                    ->stacked()
+                    ->ring(5),
                 Tables\Columns\TextColumn::make('user.name')
-                    ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable()
+                    ->label('User')
+                    ->color("success")
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('category.name')
-                    ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable()
+                    ->label('Category')
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Product')
+                    ->toggleable()
+                    ->limit(50)
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('description')
-                    ->searchable(),
+                    ->searchable()
+                    ->limit(50)
+                    ->sortable()
+                    ->label('Description')
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('price')
-                    ->searchable(),
-                Tables\Columns\ImageColumn::make('cover_image'),
+                    ->searchable()
+                    ->sortable()
+                    ->label('Price')
+                    ->toggleable()
+                    ->money('UGX', true),
+                Tables\Columns\TextColumn::make('status')
+                    ->searchable()
+                    ->sortable()
+                    ->color("danger")
+                    ->label('Status')
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('total_amount')
+                    ->searchable()
+                    ->sortable()
+                    ->label('Total Amount')
+                    ->toggleable()
+                    ->money('UGX', true),
                 Tables\Columns\TextColumn::make('pick_up_location')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('weight')
@@ -142,10 +184,49 @@ class ProductResource extends Resource
             ])
             ->filters([
                 //Tables\Filters\TrashedFilter::make(),
+                SelectFilter::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'completed' => 'Completed',
+                        'failed' => 'Failed',
+
+                    ])
+                    ->label('Status'),
+                Filter::make('created_at')
+                    ->form([
+                        DatePicker::make('created_from'),
+                        DatePicker::make('created_until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['from'] ?? null) {
+                            $indicators[] = Indicator::make('Created from ' . Carbon::parse($data['from'])->toFormattedDateString())
+                                ->removeField('from');
+                        }
+
+                        if ($data['until'] ?? null) {
+                            $indicators[] = Indicator::make('Created until ' . Carbon::parse($data['until'])->toFormattedDateString())
+                                ->removeField('until');
+                        }
+
+                        return $indicators;
+                    }),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -167,9 +248,9 @@ class ProductResource extends Resource
     {
         return [
             'index' => Pages\ListProducts::route('/'),
-            'create' => Pages\CreateProduct::route('/create'),
+            // 'create' => Pages\CreateProduct::route('/create'),
             'view' => Pages\ViewProduct::route('/{record}'),
-            'edit' => Pages\EditProduct::route('/{record}/edit'),
+            // 'edit' => Pages\EditProduct::route('/{record}/edit'),
         ];
     }
 
