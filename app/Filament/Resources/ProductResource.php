@@ -102,7 +102,7 @@ class ProductResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->label('User')
-                    ->color("success")
+                    ->color('success')
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('category.name')
                     ->sortable()
@@ -130,7 +130,7 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->searchable()
                     ->sortable()
-                    ->color("danger")
+                    ->color('danger')
                     ->label('Status')
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('total_amount')
@@ -251,6 +251,7 @@ class ProductResource extends Resource
             // 'create' => Pages\CreateProduct::route('/create'),
             'view' => Pages\ViewProduct::route('/{record}'),
             // 'edit' => Pages\EditProduct::route('/{record}/edit'),
+            'view-images' => Pages\ViewImages::route('/{record}/view-images'),
         ];
     }
 

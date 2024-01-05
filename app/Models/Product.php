@@ -33,7 +33,7 @@ class Product extends Model
         'category_id',
         'payment_id',
         'delivery_id',
-        'community_id'
+        'community_id',
 
     ];
 

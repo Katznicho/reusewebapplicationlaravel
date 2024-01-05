@@ -7,10 +7,14 @@ use App\Models\Product;
 use App\Models\UserNotification;
 use Filament\Actions;
 use Filament\Actions\Action;
-use Filament\Actions\CreateAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
+use App\Mail\Payment as ProductMail;
+use App\Models\User;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Throwable;
 
 class ViewProduct extends ViewRecord
 {
@@ -21,10 +25,15 @@ class ViewProduct extends ViewRecord
         return [
             // Actions\EditAction::make(),
 
+            Action::make("View Images")
+                ->action(function (Product $record) {
+                    return redirect()->route('filament.admin.resources.products.view-images', $record->id);
+                }),
+
             Action::make('AcceptProduct')
                 ->color('success')
                 ->requiresConfirmation()
-                ->visible(fn (Product $record) => $record->status === config("status.product_status.Pending"))
+                ->visible(fn (Product $record) => $record->status === config('status.product_status.Pending'))
                 ->form([
                     TextInput::make('reason')
                         ->required()
@@ -40,7 +49,7 @@ class ViewProduct extends ViewRecord
                 ])
                 ->action(function (Product $record, array $data) {
                     $record->update([
-                        'status' => config("status.product_status.Accepted"),
+                        'status' => config('status.product_status.Accepted'),
                         'reason' => $data['reason'],
                         'total_amount' => $data['amount'],
                         'is_product_accepted' => true,
@@ -51,8 +60,19 @@ class ViewProduct extends ViewRecord
                         'user_id' => $record->user_id,
                         'title' => 'Product Accepted',
                         'message' => $data['reason'],
-                        'type' => "Product Accepted",
+                        'type' => 'Product Accepted',
                     ]);
+                    try {
+                        $user  = User::find($record->user_id);
+                        $message = 'Your product has been accepted successfully.<br/>Total Amount: ' . $data['amount'];
+                        $message .= '<br/>Reason: ' . $data['reason'];
+                        $message .= '<br/>Product Name: ' . $record->name;
+                        $message .= '<br/>You can check the application for more details';
+                        Mail::to($user->email)->send(new ProductMail($user, $message, 'Product Accepted'));
+                    } catch (Throwable $th) {
+                        // throw $th;
+                        Log::error($th);
+                    }
                     Notification::make()
                         ->title('Product Accepted')
                         ->success()
@@ -62,7 +82,7 @@ class ViewProduct extends ViewRecord
             Action::make('RejectProduct')
                 ->color('danger')
                 ->requiresConfirmation()
-                ->visible(fn (Product $record) => $record->status === config("status.product_status.Pending"))
+                ->visible(fn (Product $record) => $record->status === config('status.product_status.Pending'))
                 ->form([
                     TextInput::make('reason')
                         ->required()
@@ -71,7 +91,7 @@ class ViewProduct extends ViewRecord
                 ])
                 ->action(function (Product $record, array $data) {
                     $record->update([
-                        'status' => config("status.product_status.Rejected"),
+                        'status' => config('status.product_status.Rejected'),
                         'reason' => $data['reason'],
                         'is_product_accepted' => false,
                         'is_product_rejected' => true,
@@ -81,15 +101,24 @@ class ViewProduct extends ViewRecord
                         'user_id' => $record->user_id,
                         'title' => 'Product Rejected',
                         'message' => $data['reason'],
-                        'type' => "Product Rejected",
+                        'type' => 'Product Rejected',
                     ]);
+                    try {
+                        $user  = User::find($record->user_id);
+                        $message = 'Your product has been rejected.<br/>Total Amount: ' . $data['amount'];
+                        $message .= '<br/>Reason: ' . $data['reason'];
+                        $message .= '<br/>Product Name: ' . $record->name;
+                        $message .= '<br/>You can check the application for more details';
+                        Mail::to($user->email)->send(new ProductMail($user, $message, 'Product Rejected'));
+                    } catch (Throwable $th) {
+                        // throw $th;
+                        Log::error($th);
+                    }
                     Notification::make()
                         ->title('Product Rejected')
                         ->success()
                         ->send();
-                })
-
-
+                }),
 
         ];
     }

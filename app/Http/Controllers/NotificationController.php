@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\UserNotification;
+use App\Services\FirebaseService;
 use App\Traits\UserTrait;
 use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
     use UserTrait;
+
     //
     public function getUserNotifications(Request $request)
     {
@@ -38,7 +40,26 @@ class NotificationController extends Controller
                     'total' => $res->total(),
                 ],
             ];
+
             return response()->json(['success' => true, 'data' => $response]);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(['success' => false, 'message' => $th->getMessage()]);
+        }
+    }
+
+    public function testPushNotiification(Request $request)
+    {
+        try {
+            //code...
+            $token = "drj0552ASH6RQrto7V0BkV:APA91bFAURpxNNNh_yiqcoNiq5BqeEeWJeQCZq2wCxoxE8LMOPBYYaSx7g_rGYg43wh7PtRlcyB3enmVECaBQ4t2vfYOb1pGtqxgbuXsAhWsmgZYYFMlgUdz96hM_Cd18lwQ9G9BsLWH";
+            $title = "Testing message";
+            $message = 'Testing sending messages';
+
+
+            $firebaseService = new FirebaseService();
+            // return $firebaseService->getAccessToken()['access_token'];
+            return $firebaseService->sendToDevice($token, $title, $message);
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(['success' => false, 'message' => $th->getMessage()]);

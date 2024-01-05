@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 class ProductController extends Controller
 {
     use UserTrait;
+
     /**
      * Display a listing of the resource.
      */
@@ -153,7 +154,7 @@ class ProductController extends Controller
                 'description' => 'required',
                 'price' => 'required',
                 'cover_image' => 'required',
-                'images' => 'required|array|min:1',
+                'images' => 'required|array|min:4|max:6',
                 'pick_up_location' => 'required',
                 'weight' => 'required',
                 'is_delivery_available' => 'required|boolean',
@@ -163,6 +164,8 @@ class ProductController extends Controller
                 //'status' => 'required',
                 'category_id' => 'required',
             ]);
+
+            // return $request->images;
 
             //if is_product_available_for_all is false then we need the community_id
             if ($request->is_product_available_for_all == false) {
@@ -195,7 +198,7 @@ class ProductController extends Controller
                 'user_id' => $this->getCurrentLoggedUserBySanctum()->id,
                 'community_id' => $request->community_id,
                 'damage_description' => $request->damage_description,
-                'status' => config("status.product_status.Pending")
+                'status' => config('status.product_status.Pending'),
 
             ]);
             if ($res) {

@@ -16,10 +16,10 @@ return [
     'product_status' => [
         'Available' => 'Available',
         'Unavailable' => 'Unavailable',
-        'Pending'=>'Pending',
-        'Rejected'=>'Rejected',
-        'Accepted'=>'Accepted',
-        
+        'Pending' => 'Pending',
+        'Rejected' => 'Rejected',
+        'Accepted' => 'Accepted',
+
     ],
 
 ];
