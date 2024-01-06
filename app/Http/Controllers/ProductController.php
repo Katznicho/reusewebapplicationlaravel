@@ -80,7 +80,7 @@ class ProductController extends Controller
             $status = $request->input('status');
             $paymentQuery = Product::where('user_id', $user_id);
 
-            if (!empty($status)) {
+            if (! empty($status)) {
                 $paymentQuery->where('status', $status);
             }
 
@@ -119,7 +119,7 @@ class ProductController extends Controller
             $status = $request->input('status');
             $paymentQuery = Delivery::where('user_id', $user_id);
 
-            if (!empty($status)) {
+            if (! empty($status)) {
                 $paymentQuery->where('status', $status);
             }
 

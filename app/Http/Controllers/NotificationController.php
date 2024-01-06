@@ -24,7 +24,7 @@ class NotificationController extends Controller
             $status = $request->input('status');
             $paymentQuery = UserNotification::where('user_id', $user_id);
 
-            if (!empty($status)) {
+            if (! empty($status)) {
                 $paymentQuery->where('status', $status);
             }
 
@@ -52,12 +52,12 @@ class NotificationController extends Controller
     {
         try {
             //code...
-            $token = "drj0552ASH6RQrto7V0BkV:APA91bFAURpxNNNh_yiqcoNiq5BqeEeWJeQCZq2wCxoxE8LMOPBYYaSx7g_rGYg43wh7PtRlcyB3enmVECaBQ4t2vfYOb1pGtqxgbuXsAhWsmgZYYFMlgUdz96hM_Cd18lwQ9G9BsLWH";
-            $title = "Testing message";
+            $token = 'drj0552ASH6RQrto7V0BkV:APA91bFAURpxNNNh_yiqcoNiq5BqeEeWJeQCZq2wCxoxE8LMOPBYYaSx7g_rGYg43wh7PtRlcyB3enmVECaBQ4t2vfYOb1pGtqxgbuXsAhWsmgZYYFMlgUdz96hM_Cd18lwQ9G9BsLWH';
+            $title = 'Testing message';
             $message = 'Testing sending messages';
 
-
             $firebaseService = new FirebaseService();
+
             // return $firebaseService->getAccessToken()['access_token'];
             return $firebaseService->sendToDevice($token, $title, $message);
         } catch (\Throwable $th) {

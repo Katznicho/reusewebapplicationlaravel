@@ -2,24 +2,27 @@
 
 namespace App\Services;
 
-use GuzzleHttp\Client;
 use Google\Auth\Credentials\ServiceAccountCredentials;
-use Google\Auth\Middleware\AuthTokenMiddleware;
+use GuzzleHttp\Client;
 
 class FirebaseService
 {
     private $projectID;
+
     private $baseURL;
+
     private $endpoint;
+
     private $url;
+
     private $scopes;
 
     public function __construct()
     {
         $this->projectID = 'reuse-f0081';
         $this->baseURL = 'https://fcm.googleapis.com';
-        $this->endpoint = 'v1/projects/' . $this->projectID . '/messages:send';
-        $this->url = $this->baseURL . '/' . $this->endpoint;
+        $this->endpoint = 'v1/projects/'.$this->projectID.'/messages:send';
+        $this->url = $this->baseURL.'/'.$this->endpoint;
         $this->scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
     }
 
@@ -34,7 +37,7 @@ class FirebaseService
     private function sendFCMMessage($fcmMessage)
     {
         $headers = [
-            'Authorization' => 'Bearer ' . $this->getAccessToken()['access_token'],
+            'Authorization' => 'Bearer '.$this->getAccessToken()['access_token'],
             'Content-Type' => 'application/json; UTF-8',
         ];
 
@@ -48,10 +51,12 @@ class FirebaseService
 
         if ($response->getStatusCode() === 200) {
             echo "Message sent to Firebase for delivery, response:\n";
-            return  $response->getBody() . "\n";
+
+            return $response->getBody()."\n";
         } else {
             echo "Unable to send message to Firebase\n";
-            return  $response->getBody() . "\n";
+
+            return $response->getBody()."\n";
         }
     }
 
@@ -99,7 +104,7 @@ class FirebaseService
     {
         $commonMessage = $this->buildCommonMessage();
         echo "FCM request body for message using common notification object:\n";
-        echo json_encode($commonMessage, JSON_PRETTY_PRINT) . "\n";
+        echo json_encode($commonMessage, JSON_PRETTY_PRINT)."\n";
         $this->sendFCMMessage($commonMessage);
     }
 
@@ -107,7 +112,7 @@ class FirebaseService
     {
         $overrideMessage = $this->buildOverrideMessage();
         echo "FCM request body for override message:\n";
-        echo json_encode($overrideMessage, JSON_PRETTY_PRINT) . "\n";
+        echo json_encode($overrideMessage, JSON_PRETTY_PRINT)."\n";
         $this->sendFCMMessage($overrideMessage);
     }
 
