@@ -3,13 +3,13 @@
 namespace App\Filament\Resources\DeliveryResource\Pages;
 
 use App\Filament\Resources\DeliveryResource;
+use App\Mail\Payment as ProductMail;
 use App\Models\Delivery;
 use App\Models\User;
 use App\Models\UserNotification;
-use Filament\Resources\Pages\ViewRecord;
 use Filament\Actions\Action;
-use App\Mail\Payment as ProductMail;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Throwable;
@@ -22,7 +22,7 @@ class ViewDelivery extends ViewRecord
     {
         return [
             // Actions\EditAction::make(),
-            Action::make("ConfirmDelivery")
+            Action::make('ConfirmDelivery')
                 ->color('success')
                 ->visible(fn (Delivery $record) => $record->status === config('status.delivery_status.Pending'))
                 //action update status to Confirmed
@@ -51,7 +51,7 @@ class ViewDelivery extends ViewRecord
                         ->send();
                 }),
 
-            Action::make("RejectDelivery")
+            Action::make('RejectDelivery')
                 ->color('danger')
                 ->visible(fn (Delivery $record) => $record->status === config('status.delivery_status.Pending'))
                 ->action(function (Delivery $record) {
@@ -75,7 +75,7 @@ class ViewDelivery extends ViewRecord
                     }
                 }),
 
-            Action::make("markDeliveryAsDelivered")
+            Action::make('markDeliveryAsDelivered')
                 ->visible(fn (Delivery $record) => $record->status === config('status.delivery_status.Confirmed'))
                 ->action(function (Delivery $record) {
                     $record->status = config('status.delivery_status.Delivered');
@@ -96,8 +96,7 @@ class ViewDelivery extends ViewRecord
                         // throw $th;
                         Log::error($th);
                     }
-                })
-
+                }),
 
         ];
     }

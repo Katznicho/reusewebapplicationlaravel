@@ -199,6 +199,7 @@ class ProductController extends Controller
                 'community_id' => $request->community_id,
                 'damage_description' => $request->damage_description,
                 'status' => config('status.product_status.Pending'),
+                'available'=>$request->is_product_available_for_all?true:false
 
             ]);
             if ($res) {

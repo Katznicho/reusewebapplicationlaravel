@@ -34,6 +34,7 @@ class Product extends Model
         'payment_id',
         'delivery_id',
         'community_id',
+        'available'
 
     ];
 

@@ -29,7 +29,7 @@ class ViewProduct extends ViewRecord
                     return redirect()->route('filament.admin.resources.products.view-images', $record->id);
                 }),
 
-            Action::make("Add Delivery")
+            Action::make('Add Delivery')
                 ->visible(fn (Product $record) => $record->status === config('status.product_status.Accepted'))
                 ->form([
                     TextInput::make('delivery_address')
@@ -77,9 +77,9 @@ class ViewProduct extends ViewRecord
                     ]);
                     try {
                         $user = User::find($record->user_id);
-                        $message = 'Your product has been accepted successfully.<br/>Total Amount: ' . $data['amount'];
-                        $message .= '<br/>Reason: ' . $data['reason'];
-                        $message .= '<br/>Product Name: ' . $record->name;
+                        $message = 'Your product has been accepted successfully.<br/>Total Amount: '.$data['amount'];
+                        $message .= '<br/>Reason: '.$data['reason'];
+                        $message .= '<br/>Product Name: '.$record->name;
                         $message .= '<br/>You can check the application for more details';
                         Mail::to($user->email)->send(new ProductMail($user, $message, 'Product Accepted'));
                     } catch (Throwable $th) {
@@ -118,9 +118,9 @@ class ViewProduct extends ViewRecord
                     ]);
                     try {
                         $user = User::find($record->user_id);
-                        $message = 'Your product has been rejected.<br/>Total Amount: ' . $data['amount'];
-                        $message .= '<br/>Reason: ' . $data['reason'];
-                        $message .= '<br/>Product Name: ' . $record->name;
+                        $message = 'Your product has been rejected.<br/>Total Amount: '.$data['amount'];
+                        $message .= '<br/>Reason: '.$data['reason'];
+                        $message .= '<br/>Product Name: '.$record->name;
                         $message .= '<br/>You can check the application for more details';
                         Mail::to($user->email)->send(new ProductMail($user, $message, 'Product Rejected'));
                     } catch (Throwable $th) {
