@@ -11,14 +11,14 @@ use App\Models\UserDevice;
 use App\Models\UserNotification;
 use App\Services\FirebaseService;
 use Filament\Actions\Action;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Throwable;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
 
 class ViewProduct extends ViewRecord
 {
@@ -34,40 +34,121 @@ class ViewProduct extends ViewRecord
                     return redirect()->route('filament.admin.resources.products.view-images', $record->id);
                 }),
 
+            Action::make("markDeliveryAsCompleted")
+                ->visible(fn (Product $record) => $record->delivery_id !== null)
+                ->color('success')
+                ->requiresConfirmation()
+                ->form([
+                    FileUpload::make('proof')
+                        ->label('Proof')
+                        //accept only images
+                        ->image()
+                        ->multiple()
+                        ->directory('delivery')
+                        ->required(),
+                ])
+                ->action(function (Product $record, array $data) {
+                    //update delivery status to completed
+                    $delivery = Delivery::where('product_id', $record->id)->first();
+                    $delivery->update([
+                        'status' => config('status.delivery_owner_status.Completed'), //update delivery status
+                        'proof' => $data['proof']
+                    ]);
+                    try {
+                        $user = User::find($record->user_id);
+                        $device = UserDevice::where('user_id', $record->user_id)->first();
+                        $message = 'Your product  delivery has been completed';
+                        $message .= ' Product Name:' . $record->name;
+                        $message .= ' You can check the application for more details';
+                        Mail::to($user->email)->send(new ProductMail($user, $message, 'Product Delivery Completed'));
+                        if ($device) {
+                            $firebaseService = new FirebaseService();
+                            $firebaseService->sendToDevice($device->push_token, 'Product Delivery  Completed', $message);
+                        }
+                        UserNotification::create([
+                            'user_id' => $record->user_id,
+                            'title' => "Product $record->name Delivery Completed",
+                            'message' => 'Your product  delivery has been completed',
+                            'type' => 'Product Delivery Completed',
+                        ]);
+
+                        //if the product is for the community update the community
+                        if ($record->community_id) {
+
+                            $community = User::find($record->community_id);
+                            $device = UserDevice::where('user_id', $community->id)->first();
+                            $message = 'Your product  delivERY has been completed';
+                            $message .= 'Product Name:' . $record->name;
+                            $message .= 'You can check the application for more details';
+                            Mail::to($community->email)->send(new ProductMail($community, $message, 'Product Delivery Completed'));
+                            if ($device) {
+                                $firebaseService = new FirebaseService();
+                                $firebaseService->sendToDevice($device->push_token, 'Product Delivery  Completed', $message);
+                            }
+                            UserNotification::create([
+                                'user_id' => $community->id,
+                                'title' => "Product $record->name Delivery Completed",
+                                'message' => 'Your product  delivery has been completed',
+                                'type' => 'Product Delivery Completed',
+                            ]);
+                        }
+                    } catch (Throwable $th) {
+                        //throw $th;
+                        Log::error($th);
+                    }
+                    Notification::make()
+                        ->success()
+                        ->title('Delivery Completed')
+                        ->body('The product delivery has been completed')
+                        ->send();
+                }),
+
             Action::make('Add Delivery Details')
-                ->visible(fn (Product $record) => $record->payment_id === null | $record->payment_id === null)
+                ->visible(fn (Product $record) => $record->status === config('status.product_status.Accepted'))
+                ->requiresConfirmation()
+                ->color('success')
                 ->form([
                     DateTimePicker::make('pickup_date')
                         ->required()
                         ->label('Pickup Date'),
                     DateTimePicker::make('delivery_date')
                         ->required()
-                        ->label('Delivery Date')
+                        ->label('Delivery Date'),
+                    TextInput::make('description')
+                        ->label('Description')
+                        ->required()
                 ])
                 ->action(function (Product $record, array $data) {
 
                     //create or update delivery details
-                    Delivery::updateOrCreate(
+                    $res = Delivery::updateOrCreate(
                         [
-                            'product_id' => $record->product_id
+                            'product_id' => $record->id,
                         ],
                         [
                             'name' => "$record->name Delivery",
                             'pickup_date' => $data['pickup_date'],
                             'delivery_date' => $data['delivery_date'],
-                            'owner_status' => config("status.delivery_owner_status.Pending"),
+                            'owner_status' => config('status.delivery_owner_status.Pending'),
                             'user_id' => $record->user_id,
                             'category_id' => $record->category_id,
-                            'product_id' => $record->product_id
+                            'product_id' => $record->id,
+                            'status' => config('status.delivery_status.Pending'),
+                            'description' => $data['description'],
+                            'slug' => "#delivery"
                         ]
                     );
+                    //update the product delivery id
+                    $record->update([
+                        'delivery_id' => $res->id,
+                    ]);
                     try {
                         $user = User::find($record->user_id);
                         $device = UserDevice::where('user_id', $record->user_id)->first();
                         $message = 'Your product  delivery details have been updated';
-                        $message .= 'Product Name:' . $record->name;
-                        $message .= 'You can check the application for more details';
-                        Mail::to($user->email)->send(new ProductMail($user, $message, 'Product Accepted'));
+                        $message .= ' Product Name:' . $record->name;
+                        $message .= ' You can check the application for more details';
+                        Mail::to($user->email)->send(new ProductMail($user, $message, 'Product Delivery Details Updated'));
                         if ($device) {
                             $firebaseService = new FirebaseService();
                             $firebaseService->sendToDevice($device->push_token, 'Product Delivery Updated', $message);
@@ -75,17 +156,13 @@ class ViewProduct extends ViewRecord
                         UserNotification::create([
                             'user_id' => $record->user_id,
                             'title' => "Product $record->name Delivery Details Updated",
-                            'message' => "Your product  delivery details have been updated",
+                            'message' => 'Your product  delivery details have been updated',
                             'type' => 'Product Delivery Details Updated',
                         ]);
 
-
                         //if the product is for the community update the community
                         if ($record->community_id) {
-                            // $community = $record->community;
-                            // $community->update([
-                            //     'status' => config('status.community_status.Pending')
-                            // ]);
+
                             $community = User::find($record->community_id);
                             $device = UserDevice::where('user_id', $community->id)->first();
                             $message = 'Your product  delivery details have been updated';
@@ -99,7 +176,7 @@ class ViewProduct extends ViewRecord
                             UserNotification::create([
                                 'user_id' => $community->id,
                                 'title' => "Product $record->name Delivery Details Updated",
-                                'message' => "Your product  delivery details have been updated",
+                                'message' => 'Your product  delivery details have been updated',
                                 'type' => 'Product Delivery Details Updated',
                             ]);
                         }

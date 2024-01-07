@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Delivery extends Model
@@ -18,11 +19,28 @@ class Delivery extends Model
         'status',
         'pickup_date',
         'delivery_date',
-        'owner_status'
+        'owner_status',
+        'user_id',
+        'category_id',
+        'product_id',
+        'proof',
     ];
 
-    public function products(): HasMany
+    //cast proof to an array 
+    protected $casts = [
+        'proof' => 'array',
+    ];
+
+
+    public function products(): BelongsTo
     {
-        return $this->hasMany(Product::class);
+        return $this->belongsTo(Product::class);
+    }
+
+
+    //delivery belongs to user
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

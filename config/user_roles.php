@@ -6,5 +6,5 @@ return [
         'RECEIVER' => 'RECEIVER',
         'ADMIN' => 'ADMIN',
     ],
-    
+
 ];

@@ -24,6 +24,13 @@ return [
         'Pending' => 'Pending',
         'Approved' => 'Approved',
         'Rejected' => 'Rejected',
+        'Cancelled' => 'Cancelled',
+        'Completed' => 'Completed',
+    ],
+    'delivery_status' => [
+        'Pending' => 'Pending',
+        'Delivered' => 'Delivered',
+        'Rejected' => 'Rejected',
     ],
 
 ];
