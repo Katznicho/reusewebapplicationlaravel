@@ -32,7 +32,7 @@ class ViewProduct extends ViewRecord
                 }),
 
             Action::make('Add Delivery')
-                ->visible(fn (Product $record) => $record->status === config('status.product_status.Accepted'))
+                ->visible(fn (Product $record) => $record->payment_id === null | $record->payment_id === null)
                 ->form([
                     TextInput::make('delivery_address')
                         ->required()
@@ -53,9 +53,9 @@ class ViewProduct extends ViewRecord
                     try {
                         $user = User::find($record->user_id);
                         $device = UserDevice::where('user_id', $record->user_id)->first();
-                        $message = 'Your product has been accepted successfully.<br/>Total Amount: ' . $data['amount'];
-                        $message .= '<br/>Reason: ' . $data['reason'];
-                        $message .= '<br/>Product Name: ' . $record->name;
+                        $message = 'Your product has been accepted successfully.<br/>Total Amount: '.$data['amount'];
+                        $message .= '<br/>Reason: '.$data['reason'];
+                        $message .= '<br/>Product Name: '.$record->name;
                         $message .= '<br/>You can check the application for more details';
                         Mail::to($user->email)->send(new ProductMail($user, $message, 'Product Accepted'));
                         if ($device) {
@@ -105,9 +105,9 @@ class ViewProduct extends ViewRecord
                     try {
                         $user = User::find($record->user_id);
                         $device = UserDevice::where('user_id', $record->user_id)->first();
-                        $message = 'Your product has been accepted successfully.Total Amount: ' . $data['amount'];
-                        $message .= 'Reason: ' . $data['reason'];
-                        $message .= 'Product Name: ' . $record->name;
+                        $message = 'Your product has been accepted successfully.Total Amount: '.$data['amount'];
+                        $message .= 'Reason: '.$data['reason'];
+                        $message .= 'Product Name: '.$record->name;
                         $message .= 'You can check the application for more details';
                         Mail::to($user->email)->send(new ProductMail($user, $message, 'Product Accepted'));
                         if ($device) {
@@ -150,9 +150,9 @@ class ViewProduct extends ViewRecord
                     ]);
                     try {
                         $user = User::find($record->user_id);
-                        $message = 'Your product has been rejected.Total Amount: ' . $data['amount'];
-                        $message .= 'Reason: ' . $data['reason'];
-                        $message .= 'Product Name: ' . $record->name;
+                        $message = 'Your product has been rejected.Total Amount: '.$data['amount'];
+                        $message .= 'Reason: '.$data['reason'];
+                        $message .= 'Product Name: '.$record->name;
                         $message .= 'You can check the application for more details';
                         Mail::to($user->email)->send(new ProductMail($user, $message, "Product $record->name Rejected"));
                         $device = UserDevice::where('user_id', $record->user_id)->first();

@@ -16,6 +16,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\ProductResource\RelationManagers;
 
 class ProductResource extends Resource
 {
@@ -212,12 +213,12 @@ class ProductResource extends Resource
                         $indicators = [];
 
                         if ($data['from'] ?? null) {
-                            $indicators[] = Indicator::make('Created from '.Carbon::parse($data['from'])->toFormattedDateString())
+                            $indicators[] = Indicator::make('Created from ' . Carbon::parse($data['from'])->toFormattedDateString())
                                 ->removeField('from');
                         }
 
                         if ($data['until'] ?? null) {
-                            $indicators[] = Indicator::make('Created until '.Carbon::parse($data['until'])->toFormattedDateString())
+                            $indicators[] = Indicator::make('Created until ' . Carbon::parse($data['until'])->toFormattedDateString())
                                 ->removeField('until');
                         }
 
@@ -241,6 +242,8 @@ class ProductResource extends Resource
     {
         return [
             //
+            RelationManagers\PaymentRelationManager::class,
+            RelationManagers\DeliveryRelationManager::class,
         ];
     }
 

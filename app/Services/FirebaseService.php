@@ -119,11 +119,12 @@ class FirebaseService
     /**
      * Sends a push notification to a specific device.
      *
-     * @param string $deviceToken The token of the device to send the notification to.
-     * @param string $title The title of the notification.
-     * @param string $body The body of the notification.
-     * @throws Some_Exception_Class Description of the exception that can be thrown.
+     * @param  string  $deviceToken The token of the device to send the notification to.
+     * @param  string  $title The title of the notification.
+     * @param  string  $body The body of the notification.
      * @return Some_Return_Value The value returned by the sendFCMMessage function.
+     *
+     * @throws Some_Exception_Class Description of the exception that can be thrown.
      */
     public function sendToDevice($deviceToken, $title, $body)
     {

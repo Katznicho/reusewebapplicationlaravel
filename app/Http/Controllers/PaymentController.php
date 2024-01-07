@@ -108,7 +108,7 @@ class PaymentController extends Controller
             $device = UserDevice::where('user_id', $customer->id)->first();
             if ($device) {
                 $firebaseService = new FirebaseService();
-                $firebaseService->sendToDevice($device->push_token, 'Donation Received', "Your Donation Has Been Successfully Completed");
+                $firebaseService->sendToDevice($device->push_token, 'Donation Received', 'Your Donation Has Been Successfully Completed');
             }
 
             // return view('payments.finish');
@@ -133,7 +133,7 @@ class PaymentController extends Controller
             $device = UserDevice::where('user_id', $customer->id)->first();
             if ($device) {
                 $firebaseService = new FirebaseService();
-                $firebaseService->sendToDevice($device->push_token, 'Wallet TopUp', "Your Wallet Balance Has Been Successfully Updated");
+                $firebaseService->sendToDevice($device->push_token, 'Wallet TopUp', 'Your Wallet Balance Has Been Successfully Updated');
             }
 
             return response()->json([
@@ -156,7 +156,7 @@ class PaymentController extends Controller
             $device = UserDevice::where('user_id', $customer->id)->first();
             if ($device) {
                 $firebaseService = new FirebaseService();
-                $firebaseService->sendToDevice($device->push_token, 'Product Payment Received', "The  product payment has been successfully completed");
+                $firebaseService->sendToDevice($device->push_token, 'Product Payment Received', 'The  product payment has been successfully completed');
             }
 
             return response()->json([
@@ -184,7 +184,7 @@ class PaymentController extends Controller
             ]);
             //get the actual transaction
             $transaction = Payment::where('reference', $reference)->first();
-            if (!$transaction) {
+            if (! $transaction) {
                 Log::error('Transaction does not exist');
 
                 return view('payments.cancel');
@@ -212,7 +212,7 @@ class PaymentController extends Controller
                     return view('payments.finish');
                 }
 
-                // $this->sendMessage($)
+            // $this->sendMessage($)
 
             } else {
                 $transaction->update([
@@ -297,7 +297,7 @@ class PaymentController extends Controller
             ]);
 
             $transaction = Payment::where('reference', $orderMerchantReference)->first();
-            if (!$transaction) {
+            if (! $transaction) {
                 return response()->json([
                     'status' => 500,
                     'message' => 'Transaction not found',
@@ -349,7 +349,7 @@ class PaymentController extends Controller
             ]);
             $getCustomer = $this->getCurrentLoggedUserBySanctum();
 
-            if (!$getCustomer) {
+            if (! $getCustomer) {
                 return response()->json(['success' => false, 'message' => 'Customer not found']);
             }
             $amount = $request->input('amount');
@@ -362,7 +362,7 @@ class PaymentController extends Controller
             $customer_id = $getCustomer->id;
             $cancel_url = $request->input('cancel_url');
             //add the payment reference to cancel url
-            $cancel_url = $cancel_url . '?payment_reference=' . $reference;
+            $cancel_url = $cancel_url.'?payment_reference='.$reference;
             $payment_type = $request->input('payment_type');
             // return $payment_type;
             // return $amount;
@@ -429,7 +429,7 @@ class PaymentController extends Controller
             $status = $request->input('status');
             $paymentQuery = Payment::where('user_id', $user_id);
 
-            if (!empty($status)) {
+            if (! empty($status)) {
                 $paymentQuery->where('status', $status);
             }
 

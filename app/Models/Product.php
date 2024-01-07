@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Product extends Model
 {
@@ -53,8 +54,15 @@ class Product extends Model
 
     //product belongs to delivery
 
-    public function delivery(): BelongsTo
+    public function delivery(): HasOne
     {
-        return $this->belongsTo(Delivery::class);
+        return $this->hasOne(Delivery::class);
+    }
+
+    //a product has a payment
+    public function payment(): HasOne
+    {
+
+        return $this->hasOne(Payment::class);
     }
 }
