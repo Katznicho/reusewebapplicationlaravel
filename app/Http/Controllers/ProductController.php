@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Delivery;
 use App\Models\Product;
 use App\Traits\UserTrait;
@@ -80,7 +81,7 @@ class ProductController extends Controller
             $status = $request->input('status');
             $paymentQuery = Product::where('user_id', $user_id);
 
-            if (! empty($status)) {
+            if (!empty($status)) {
                 $paymentQuery->where('status', $status);
             }
 
@@ -119,7 +120,7 @@ class ProductController extends Controller
             $status = $request->input('status');
             $paymentQuery = Delivery::where('user_id', $user_id);
 
-            if (! empty($status)) {
+            if (!empty($status)) {
                 $paymentQuery->where('status', $status);
             }
 
@@ -199,7 +200,7 @@ class ProductController extends Controller
                 'community_id' => $request->community_id,
                 'damage_description' => $request->damage_description,
                 'status' => config('status.product_status.Pending'),
-                'available'=>$request->is_product_available_for_all?true:false
+                'available' => $request->is_product_available_for_all ? true : false,
 
             ]);
             if ($res) {
@@ -207,6 +208,79 @@ class ProductController extends Controller
             } else {
                 return response()->json(['success' => false, 'message' => 'Failed to create product']);
             }
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(['success' => false, 'message' => $th->getMessage()]);
+        }
+    }
+
+    public function getAVailableProductsByPage(Request $request)
+    {
+        try {
+            $limit = $request->input('limit', 100);
+            $page = $request->input('page', 1);
+            $sortOrder = $request->input('sort_order', 'desc');
+            // $user_id = $this->getCurrentLoggedUserBySanctum()->id;
+            $products = Product::where('available', true)->orderBy('id', $sortOrder)->with([
+                'user',
+                'category',
+            ])->paginate($limit, ['*'], 'page', $page);
+            $response = [
+                'data' => $products->items(),
+                'pagination' => [
+                    'current_page' => $products->currentPage(),
+                    'per_page' => $limit,
+                    'total' => $products->total(),
+                ]
+            ];
+            return response()->json(['success' => true, 'data' => $response]);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(['success' => false, 'message' => $th->getMessage()]);
+        }
+    }
+
+    public function getAvailableProductsByCategoryWithPage(Request $request)
+    {
+        try {
+            $limit = $request->input('limit', 100);
+            $page = $request->input('page', 1);
+            $sortOrder = $request->input('sort_order', 'desc');
+            $products = Product::where('available', true)->where('category_id', $request->category_id)->orderBy('id', $sortOrder)->with([
+                'user',
+                'category',
+            ])->paginate($limit, ['*'], 'page', $page);
+            $response = [
+                'data' => $products->items(),
+                'pagination' => [
+                    'current_page' => $products->currentPage(),
+                    'per_page' => $limit,
+                    'total' => $products->total(),
+                ]
+            ];
+            return response()->json(['success' => true, 'data' => $response]);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(['success' => false, 'message' => $th->getMessage()]);
+        }
+    }
+
+    public function geCategoriesByPage(Request $request)
+    {
+        try {
+            $limit = $request->input('limit', 100);
+            $page = $request->input('page', 1);
+            $sortOrder = $request->input('sort_order', 'desc');
+            $categories = Category::orderBy('id', $sortOrder)->paginate($limit, ['*'], 'page', $page);
+            $response = [
+                'data' => $categories->items(),
+                'pagination' => [
+                    'current_page' => $categories->currentPage(),
+                    'per_page' => $limit,
+                    'total' => $categories->total(),
+                ]
+            ];
+            return response()->json(['success' => true, 'data' => $response]);
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(['success' => false, 'message' => $th->getMessage()]);
