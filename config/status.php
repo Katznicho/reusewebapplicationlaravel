@@ -19,7 +19,11 @@ return [
         'Pending' => 'Pending',
         'Rejected' => 'Rejected',
         'Accepted' => 'Accepted',
-
+    ],
+    'delivery_owner_status' => [
+        'Pending' => 'Pending',
+        'Approved' => 'Approved',
+        'Rejected' => 'Rejected',
     ],
 
 ];

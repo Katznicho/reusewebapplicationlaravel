@@ -4,6 +4,7 @@ namespace App\Filament\Resources\ProductResource\Pages;
 
 use App\Filament\Resources\ProductResource;
 use App\Mail\Payment as ProductMail;
+use App\Models\Delivery;
 use App\Models\Product;
 use App\Models\User;
 use App\Models\UserDevice;
@@ -16,6 +17,8 @@ use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Throwable;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\DateTimePicker;
 
 class ViewProduct extends ViewRecord
 {
@@ -31,41 +34,84 @@ class ViewProduct extends ViewRecord
                     return redirect()->route('filament.admin.resources.products.view-images', $record->id);
                 }),
 
-            Action::make('Add Delivery')
+            Action::make('Add Delivery Details')
                 ->visible(fn (Product $record) => $record->payment_id === null | $record->payment_id === null)
                 ->form([
-                    TextInput::make('delivery_address')
+                    DateTimePicker::make('pickup_date')
                         ->required()
-                        ->label('Delivery Address')
-                        ->maxLength(255),
-                    TextInput::make('delivery_date')
+                        ->label('Pickup Date'),
+                    DateTimePicker::make('delivery_date')
                         ->required()
                         ->label('Delivery Date')
-                        ->maxLength(255),
-
                 ])
                 ->action(function (Product $record, array $data) {
-                    //update product
-                    // $record->update([
-                    //     'delivery_address' => $data['delivery_address'],
-                    //     'delivery_date' => $data['delivery_date'],
-                    // ]);
+
+                    //create or update delivery details
+                    Delivery::updateOrCreate(
+                        [
+                            'product_id' => $record->product_id
+                        ],
+                        [
+                            'name' => "$record->name Delivery",
+                            'pickup_date' => $data['pickup_date'],
+                            'delivery_date' => $data['delivery_date'],
+                            'owner_status' => config("status.delivery_owner_status.Pending"),
+                            'user_id' => $record->user_id,
+                            'category_id' => $record->category_id,
+                            'product_id' => $record->product_id
+                        ]
+                    );
                     try {
                         $user = User::find($record->user_id);
                         $device = UserDevice::where('user_id', $record->user_id)->first();
-                        $message = 'Your product has been accepted successfully.<br/>Total Amount: '.$data['amount'];
-                        $message .= '<br/>Reason: '.$data['reason'];
-                        $message .= '<br/>Product Name: '.$record->name;
-                        $message .= '<br/>You can check the application for more details';
+                        $message = 'Your product  delivery details have been updated';
+                        $message .= 'Product Name:' . $record->name;
+                        $message .= 'You can check the application for more details';
                         Mail::to($user->email)->send(new ProductMail($user, $message, 'Product Accepted'));
                         if ($device) {
                             $firebaseService = new FirebaseService();
-                            $firebaseService->sendToDevice($device->push_token, 'Product Accepted', $message);
+                            $firebaseService->sendToDevice($device->push_token, 'Product Delivery Updated', $message);
+                        }
+                        UserNotification::create([
+                            'user_id' => $record->user_id,
+                            'title' => "Product $record->name Delivery Details Updated",
+                            'message' => "Your product  delivery details have been updated",
+                            'type' => 'Product Delivery Details Updated',
+                        ]);
+
+
+                        //if the product is for the community update the community
+                        if ($record->community_id) {
+                            // $community = $record->community;
+                            // $community->update([
+                            //     'status' => config('status.community_status.Pending')
+                            // ]);
+                            $community = User::find($record->community_id);
+                            $device = UserDevice::where('user_id', $community->id)->first();
+                            $message = 'Your product  delivery details have been updated';
+                            $message .= 'Product Name:' . $record->name;
+                            $message .= 'You can check the application for more details';
+                            Mail::to($community->email)->send(new ProductMail($community, $message, 'Product Delivery Details Updated'));
+                            if ($device) {
+                                $firebaseService = new FirebaseService();
+                                $firebaseService->sendToDevice($device->push_token, 'Product Delivery Details Updated', $message);
+                            }
+                            UserNotification::create([
+                                'user_id' => $community->id,
+                                'title' => "Product $record->name Delivery Details Updated",
+                                'message' => "Your product  delivery details have been updated",
+                                'type' => 'Product Delivery Details Updated',
+                            ]);
                         }
                     } catch (Throwable $th) {
                         //throw $th;
                         Log::error($th);
                     }
+
+                    Notification::make()
+                        ->title('Delivery Details Updated')
+                        ->success()
+                        ->send();
                 }),
 
             Action::make('AcceptProduct')
@@ -105,9 +151,9 @@ class ViewProduct extends ViewRecord
                     try {
                         $user = User::find($record->user_id);
                         $device = UserDevice::where('user_id', $record->user_id)->first();
-                        $message = 'Your product has been accepted successfully.Total Amount: '.$data['amount'];
-                        $message .= 'Reason: '.$data['reason'];
-                        $message .= 'Product Name: '.$record->name;
+                        $message = 'Your product has been accepted successfully.Total Amount: ' . $data['amount'];
+                        $message .= 'Reason: ' . $data['reason'];
+                        $message .= 'Product Name: ' . $record->name;
                         $message .= 'You can check the application for more details';
                         Mail::to($user->email)->send(new ProductMail($user, $message, 'Product Accepted'));
                         if ($device) {
@@ -150,9 +196,9 @@ class ViewProduct extends ViewRecord
                     ]);
                     try {
                         $user = User::find($record->user_id);
-                        $message = 'Your product has been rejected.Total Amount: '.$data['amount'];
-                        $message .= 'Reason: '.$data['reason'];
-                        $message .= 'Product Name: '.$record->name;
+                        $message = 'Your product has been rejected.Total Amount: ' . $data['amount'];
+                        $message .= 'Reason: ' . $data['reason'];
+                        $message .= 'Product Name: ' . $record->name;
                         $message .= 'You can check the application for more details';
                         Mail::to($user->email)->send(new ProductMail($user, $message, "Product $record->name Rejected"));
                         $device = UserDevice::where('user_id', $record->user_id)->first();

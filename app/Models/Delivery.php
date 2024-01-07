@@ -16,6 +16,9 @@ class Delivery extends Model
         'description',
         'is_active',
         'status',
+        'pickup_date',
+        'delivery_date',
+        'owner_status'
     ];
 
     public function products(): HasMany
