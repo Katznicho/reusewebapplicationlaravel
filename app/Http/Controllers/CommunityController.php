@@ -24,8 +24,9 @@ class CommunityController extends Controller
                     'current_page' => $communitys->currentPage(),
                     'per_page' => $limit,
                     'total' => $communitys->total(),
-                ]
+                ],
             ];
+
             return response()->json(['success' => true, 'data' => $response]);
         } catch (\Throwable $th) {
             //throw $th;
@@ -40,8 +41,9 @@ class CommunityController extends Controller
             $community = User::where('id', $request->community_id)->with([
                 'userPayments',
                 'userDeliveries',
-                'userProducts'
+                'userProducts',
             ])->first();
+
             return response()->json(['success' => true, 'data' => $community]);
         } catch (\Throwable $th) {
             //throw $th;
@@ -53,11 +55,12 @@ class CommunityController extends Controller
     public function getCommunityTotals(Request $request)
     {
         try {
-            $user =   $this->getCurrentLoggedUserBySanctum();
+            $user = $this->getCurrentLoggedUserBySanctum();
             $total_products = Product::where('community_id', $user->user_id)->count();
             $total_payments = Payment::where('community_id', $user->user_id)->sum('amount');
             $deliveries = Delivery::where('community_id', $user->user_id)->get();
             $total_deliveries = $user->userDeliveries->count();
+
             return response()->json(['success' => true, 'data' => [
                 'total_products' => $total_products,
                 'total_payments' => $total_payments,

@@ -9,7 +9,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('createProduct', [ProductController::class, 'createProduct']);
 });
 
-Route::get("geCategoriesByPage", [ProductController::class, 'geCategoriesByPage']);
-Route::get("getAvailableProductsByCategoryWithPage", [ProductController::class, 'getAvailableProductsByCategoryWithPage']);
-Route::get("getAVailableProductsByPage", [ProductController::class, 'getAVailableProductsByPage']);
-
+Route::get('geCategoriesByPage', [ProductController::class, 'geCategoriesByPage']);
+Route::get('getAvailableProductsByCategoryWithPage', [ProductController::class, 'getAvailableProductsByCategoryWithPage']);
+Route::get('getAVailableProductsByPage', [ProductController::class, 'getAVailableProductsByPage']);

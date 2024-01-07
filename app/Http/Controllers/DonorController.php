@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 class DonorController extends Controller
 {
     use UserTrait;
+
     //
     public function getDonorsByPage(Request $request)
     {
@@ -26,8 +27,9 @@ class DonorController extends Controller
                     'current_page' => $donors->currentPage(),
                     'per_page' => $limit,
                     'total' => $donors->total(),
-                ]
+                ],
             ];
+
             return response()->json(['success' => true, 'data' => $response]);
         } catch (\Throwable $th) {
             //throw $th;
@@ -42,8 +44,9 @@ class DonorController extends Controller
             $donor = User::where('id', $request->donor_id)->with([
                 'userPayments',
                 'userDeliveries',
-                'userProducts'
+                'userProducts',
             ])->first();
+
             return response()->json(['success' => true, 'data' => $donor]);
         } catch (\Throwable $th) {
             //throw $th;
@@ -55,10 +58,10 @@ class DonorController extends Controller
     public function getDonorTotals(Request $request)
     {
         try {
-            $user =   $this->getCurrentLoggedUserBySanctum();
+            $user = $this->getCurrentLoggedUserBySanctum();
             $total_products = Product::where('user_id', $user->user_id)->count();
             $total_payments = Payment::where('user_id', $user->user_id)->sum('amount');
-            $deliveries =  Delivery::where('user_id', $user->user_id)->count();
+            $deliveries = Delivery::where('user_id', $user->user_id)->count();
             $total_deliveries = $user->userDeliveries->count();
             $total_payments = $user->userPayments->count();
             $response = [
@@ -66,9 +69,10 @@ class DonorController extends Controller
                 'total_payments' => $total_payments,
                 'total_deliveries' => $total_deliveries,
                 'total_payments' => $total_payments,
-                'total_deliveries' => $total_deliveries
+                'total_deliveries' => $deliveries,
 
             ];
+
             return response()->json(['success' => true, 'data' => $response]);
         } catch (\Throwable $th) {
             //throw $th;

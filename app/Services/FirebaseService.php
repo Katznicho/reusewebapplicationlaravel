@@ -116,6 +116,15 @@ class FirebaseService
         $this->sendFCMMessage($overrideMessage);
     }
 
+    /**
+     * Sends a push notification to a specific device.
+     *
+     * @param string $deviceToken The token of the device to send the notification to.
+     * @param string $title The title of the notification.
+     * @param string $body The body of the notification.
+     * @throws Some_Exception_Class Description of the exception that can be thrown.
+     * @return Some_Return_Value The value returned by the sendFCMMessage function.
+     */
     public function sendToDevice($deviceToken, $title, $body)
     {
         $fcmMessage = [

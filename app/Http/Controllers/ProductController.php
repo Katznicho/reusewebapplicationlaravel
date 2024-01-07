@@ -81,7 +81,7 @@ class ProductController extends Controller
             $status = $request->input('status');
             $paymentQuery = Product::where('user_id', $user_id);
 
-            if (!empty($status)) {
+            if (! empty($status)) {
                 $paymentQuery->where('status', $status);
             }
 
@@ -120,7 +120,7 @@ class ProductController extends Controller
             $status = $request->input('status');
             $paymentQuery = Delivery::where('user_id', $user_id);
 
-            if (!empty($status)) {
+            if (! empty($status)) {
                 $paymentQuery->where('status', $status);
             }
 
@@ -231,8 +231,9 @@ class ProductController extends Controller
                     'current_page' => $products->currentPage(),
                     'per_page' => $limit,
                     'total' => $products->total(),
-                ]
+                ],
             ];
+
             return response()->json(['success' => true, 'data' => $response]);
         } catch (\Throwable $th) {
             //throw $th;
@@ -256,8 +257,9 @@ class ProductController extends Controller
                     'current_page' => $products->currentPage(),
                     'per_page' => $limit,
                     'total' => $products->total(),
-                ]
+                ],
             ];
+
             return response()->json(['success' => true, 'data' => $response]);
         } catch (\Throwable $th) {
             //throw $th;
@@ -278,8 +280,9 @@ class ProductController extends Controller
                     'current_page' => $categories->currentPage(),
                     'per_page' => $limit,
                     'total' => $categories->total(),
-                ]
+                ],
             ];
+
             return response()->json(['success' => true, 'data' => $response]);
         } catch (\Throwable $th) {
             //throw $th;
