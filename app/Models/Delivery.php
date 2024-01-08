@@ -30,7 +30,7 @@ class Delivery extends Model
         'proof' => 'array',
     ];
 
-    public function products(): BelongsTo
+    public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
@@ -39,5 +39,11 @@ class Delivery extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    //delivert has a category
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
     }
 }
