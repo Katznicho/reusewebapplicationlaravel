@@ -27,23 +27,43 @@ class DeliveryRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('delivery_id')
             ->columns([
-                Tables\Columns\TextColumn::make('user_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('category_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('product_id')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->searchable()
+                    ->toggleable()
+                    ->sortable()
+                    ->copyable()
+                    ->label('User Name'),
+                Tables\Columns\TextColumn::make('category.name')
+                    ->sortable()
+                    ->searchable()
+                    ->copyable()
+                    ->label('Category Name'),
+                Tables\Columns\TextColumn::make('product.name')
+                    ->sortable()
+                    ->searchable()
+                    ->copyable()
+                    ->toggleable()
+                    ->label('Product Name'),
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->copyable()
+                    ->toggleable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('slug')
-                    ->searchable(),
+                    ->searchable()
+                    ->copyable()
+                    ->toggleable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('description')
-                    ->searchable(),
+                    ->searchable()
+                    ->copyable()
+                    ->toggleable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('status')
-                    ->searchable(),
+                    ->searchable()
+                    ->copyable()
+                    ->toggleable()
+                    ->sortable(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('deleted_at')
