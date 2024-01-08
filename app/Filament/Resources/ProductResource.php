@@ -94,11 +94,6 @@ class ProductResource extends Resource
                 Tables\Columns\ImageColumn::make('cover_image')
                     ->label('Cover Image')
                     ->circular(),
-                Tables\Columns\ImageColumn::make('images')
-                    ->label('Images')
-                    ->circular()
-                    ->stacked()
-                    ->ring(5),
                 Tables\Columns\TextColumn::make('user.name')
                     ->sortable()
                     ->searchable()
@@ -193,6 +188,7 @@ class ProductResource extends Resource
 
                     ])
                     ->label('Status'),
+                    
                 Filter::make('created_at')
                     ->form([
                         DatePicker::make('created_from'),
@@ -213,12 +209,12 @@ class ProductResource extends Resource
                         $indicators = [];
 
                         if ($data['from'] ?? null) {
-                            $indicators[] = Indicator::make('Created from '.Carbon::parse($data['from'])->toFormattedDateString())
+                            $indicators[] = Indicator::make('Created from ' . Carbon::parse($data['from'])->toFormattedDateString())
                                 ->removeField('from');
                         }
 
                         if ($data['until'] ?? null) {
-                            $indicators[] = Indicator::make('Created until '.Carbon::parse($data['until'])->toFormattedDateString())
+                            $indicators[] = Indicator::make('Created until ' . Carbon::parse($data['until'])->toFormattedDateString())
                                 ->removeField('until');
                         }
 

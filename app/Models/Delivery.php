@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Delivery extends Model
 {
@@ -26,17 +25,15 @@ class Delivery extends Model
         'proof',
     ];
 
-    //cast proof to an array 
+    //cast proof to an array
     protected $casts = [
         'proof' => 'array',
     ];
-
 
     public function products(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
-
 
     //delivery belongs to user
     public function user(): BelongsTo
