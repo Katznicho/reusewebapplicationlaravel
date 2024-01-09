@@ -81,7 +81,7 @@ class ProductController extends Controller
             $status = $request->input('status');
             $paymentQuery = Product::where('user_id', $user_id);
 
-            if (! empty($status)) {
+            if (!empty($status)) {
                 $paymentQuery->where('status', $status);
             }
 
@@ -89,7 +89,16 @@ class ProductController extends Controller
                 'user',
                 'delivery',
                 'category',
+                'payment',
+                'community',
             ])->paginate($limit, ['*'], 'page', $page);
+
+            // Decode the images using the accessor
+            // $res->transform(function ($product) {
+            //     $product->images = $product->images;
+            //     return $product;
+            // });
+
 
             $response = [
                 'data' => $res->items(),
@@ -120,7 +129,7 @@ class ProductController extends Controller
             $status = $request->input('status');
             $paymentQuery = Delivery::where('user_id', $user_id);
 
-            if (! empty($status)) {
+            if (!empty($status)) {
                 $paymentQuery->where('status', $status);
             }
 
@@ -128,6 +137,8 @@ class ProductController extends Controller
                 'user',
                 'category',
                 'product',
+                'payment',
+                'community',
             ])->paginate($limit, ['*'], 'page', $page);
 
             $response = [
@@ -140,6 +151,24 @@ class ProductController extends Controller
             ];
 
             return response()->json(['success' => true, 'data' => $response]);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(['success' => false, 'message' => $th->getMessage()]);
+        }
+    }
+
+    //confirm delivery by setting the owner_status to Accepted
+    public function confirmDelivery(Request $request)
+    {
+        try {
+            $request->validate([
+                'delivery_id' => 'required',
+            ]);
+            $delivery = Delivery::find($request->delivery_id);
+            $delivery->update([
+                'status' => config('status.delivery_owner_status.Approved'),
+            ]);
+            return response()->json(['success' => true, 'message' => 'Delivery confirmed']);
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(['success' => false, 'message' => $th->getMessage()]);
@@ -284,6 +313,17 @@ class ProductController extends Controller
             ];
 
             return response()->json(['success' => true, 'data' => $response]);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(['success' => false, 'message' => $th->getMessage()]);
+        }
+    }
+
+    public function getAllProductCategories(Request $request)
+    {
+        try {
+            $categories = Category::all();
+            return response()->json(['success' => true, 'data' => $categories]);
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(['success' => false, 'message' => $th->getMessage()]);

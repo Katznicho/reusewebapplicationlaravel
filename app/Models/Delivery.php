@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Delivery extends Model
 {
@@ -23,6 +24,8 @@ class Delivery extends Model
         'category_id',
         'product_id',
         'proof',
+        'community_id',
+        'payment_id'
     ];
 
     //cast proof to an array
@@ -45,5 +48,17 @@ class Delivery extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    //delivery has a payment
+    public function payment(): HasOne
+    {
+        return $this->hasOne(Payment::class);
+    }
+
+    //delivery belongs to a community using community_id
+    public function community(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'community_id', 'id');
     }
 }

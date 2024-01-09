@@ -58,7 +58,7 @@ class ViewProduct extends ViewRecord
                         $user = User::find($record->user_id);
                         $device = UserDevice::where('user_id', $record->user_id)->first();
                         $message = 'Your product  delivery has been completed';
-                        $message .= ' Product Name:'.$record->name;
+                        $message .= ' Product Name:' . $record->name;
                         $message .= ' You can check the application for more details';
                         Mail::to($user->email)->send(new ProductMail($user, $message, 'Product Delivery Completed'));
                         if ($device) {
@@ -78,7 +78,7 @@ class ViewProduct extends ViewRecord
                             $community = User::find($record->community_id);
                             $device = UserDevice::where('user_id', $community->id)->first();
                             $message = 'Your product  delivERY has been completed';
-                            $message .= 'Product Name:'.$record->name;
+                            $message .= 'Product Name:' . $record->name;
                             $message .= 'You can check the application for more details';
                             Mail::to($community->email)->send(new ProductMail($community, $message, 'Product Delivery Completed'));
                             if ($device) {
@@ -133,6 +133,8 @@ class ViewProduct extends ViewRecord
                             'user_id' => $record->user_id,
                             'category_id' => $record->category_id,
                             'product_id' => $record->id,
+                            'payment_id' => $record->payment_id,
+                            'community_id' => $record->community_id,
                             'status' => config('status.delivery_status.Pending'),
                             'description' => $data['description'],
                             'slug' => '#delivery',
@@ -142,11 +144,15 @@ class ViewProduct extends ViewRecord
                     $record->update([
                         'delivery_id' => $res->id,
                     ]);
+                    //update the payment with the delivery id
+                    $record->payment->update([
+                        'delivery_id' => $res->id,
+                    ]);
                     try {
                         $user = User::find($record->user_id);
                         $device = UserDevice::where('user_id', $record->user_id)->first();
                         $message = 'Your product  delivery details have been updated';
-                        $message .= ' Product Name:'.$record->name;
+                        $message .= ' Product Name:' . $record->name;
                         $message .= ' You can check the application for more details';
                         Mail::to($user->email)->send(new ProductMail($user, $message, 'Product Delivery Details Updated'));
                         if ($device) {
@@ -166,7 +172,7 @@ class ViewProduct extends ViewRecord
                             $community = User::find($record->community_id);
                             $device = UserDevice::where('user_id', $community->id)->first();
                             $message = 'Your product  delivery details have been updated';
-                            $message .= 'Product Name:'.$record->name;
+                            $message .= 'Product Name:' . $record->name;
                             $message .= 'You can check the application for more details';
                             Mail::to($community->email)->send(new ProductMail($community, $message, 'Product Delivery Details Updated'));
                             if ($device) {
@@ -228,9 +234,9 @@ class ViewProduct extends ViewRecord
                     try {
                         $user = User::find($record->user_id);
                         $device = UserDevice::where('user_id', $record->user_id)->first();
-                        $message = 'Your product has been accepted successfully.Total Amount: '.$data['amount'];
-                        $message .= 'Reason: '.$data['reason'];
-                        $message .= 'Product Name: '.$record->name;
+                        $message = 'Your product has been accepted successfully.Total Amount: ' . $data['amount'];
+                        $message .= 'Reason: ' . $data['reason'];
+                        $message .= 'Product Name: ' . $record->name;
                         $message .= 'You can check the application for more details';
                         Mail::to($user->email)->send(new ProductMail($user, $message, 'Product Accepted'));
                         if ($device) {
@@ -273,9 +279,9 @@ class ViewProduct extends ViewRecord
                     ]);
                     try {
                         $user = User::find($record->user_id);
-                        $message = 'Your product has been rejected.Total Amount: '.$data['amount'];
-                        $message .= 'Reason: '.$data['reason'];
-                        $message .= 'Product Name: '.$record->name;
+                        $message = 'Your product has been rejected.Total Amount: ' . $data['amount'];
+                        $message .= 'Reason: ' . $data['reason'];
+                        $message .= 'Product Name: ' . $record->name;
                         $message .= 'You can check the application for more details';
                         Mail::to($user->email)->send(new ProductMail($user, $message, "Product $record->name Rejected"));
                         $device = UserDevice::where('user_id', $record->user_id)->first();

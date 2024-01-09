@@ -45,6 +45,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         'otp',
         'otp_send_time',
         'device_token',
+        'email_verified_at'
 
     ];
 

@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\Payment;
+
 use App\Models\Delivery;
 use App\Models\Product;
 use App\Models\User;
 use App\Traits\UserTrait;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 
 class DonorController extends Controller
@@ -59,17 +60,17 @@ class DonorController extends Controller
     {
         try {
             $user = $this->getCurrentLoggedUserBySanctum();
-            $total_products = Product::where('user_id', $user->user_id)->count();
-            $total_payments = Payment::where('user_id', $user->user_id)->sum('amount');
-            $deliveries = Delivery::where('user_id', $user->user_id)->count();
-            $total_deliveries = $user->userDeliveries->count();
-            $total_payments = $user->userPayments->count();
+            $total_products = Product::where('user_id', $user->id)->count();
+            $sum_payments = Payment::where('user_id', $user->id)->sum('amount');
+            $total_deliveries = Delivery::where('user_id', $user->id)->count();
+            $total_payments = Payment::where('user_id', $user->id)->count();
+            $total_community = User::where('role', config('user_roles.RECEIVER'))->count();
             $response = [
                 'total_products' => $total_products,
-                'total_payments' => $total_payments,
+                'sum_payments' => $sum_payments,
                 'total_deliveries' => $total_deliveries,
                 'total_payments' => $total_payments,
-                'total_deliveries' => $deliveries,
+                'total_communities' => $total_community
 
             ];
 

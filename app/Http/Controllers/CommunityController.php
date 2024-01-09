@@ -6,10 +6,12 @@ use App\Models\Delivery;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\User;
+use App\Traits\UserTrait;
 use Illuminate\Http\Request;
 
 class CommunityController extends Controller
 {
+    use UserTrait;
     //get all communitys by page
     public function getCommunitysByPage(Request $request)
     {
@@ -56,16 +58,28 @@ class CommunityController extends Controller
     {
         try {
             $user = $this->getCurrentLoggedUserBySanctum();
-            $total_products = Product::where('community_id', $user->user_id)->count();
-            $total_payments = Payment::where('community_id', $user->user_id)->sum('amount');
-            $deliveries = Delivery::where('community_id', $user->user_id)->get();
-            $total_deliveries = $user->userDeliveries->count();
+            $total_products = Product::where('community_id', $user->id)->count();
+            $total_payments = Payment::where('user_id', $user->id)->sum('amount');
+            $deliveries = Delivery::where('community_id', $user->id)->count();
+
 
             return response()->json(['success' => true, 'data' => [
                 'total_products' => $total_products,
                 'total_payments' => $total_payments,
-                'total_deliveries' => $total_deliveries,
+                'total_deliveries' => $deliveries,
             ]]);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(['success' => false, 'message' => $th->getMessage()]);
+        }
+    }
+
+    public function getAllAvailableCommunities(Request $request)
+    {
+        try {
+            //code...
+            $communities = User::where('role', config('user_roles.user_roles.RECEIVER'))->get();
+            return response()->json(['success' => true, 'data' => $communities]);
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(['success' => false, 'message' => $th->getMessage()]);

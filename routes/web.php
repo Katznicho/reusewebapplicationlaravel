@@ -19,9 +19,9 @@ Route::get('/', function () {
 });
 
 //redirect to dashboard
-Route::get('/{any}', function () {
-    return redirect('/admin');
-})->where('any', '.*');
+// Route::get('/{any}', function () {
+//     return redirect('/admin');
+// })->where('any', '.*');
 
 Route::get('finishPayment', [PaymentController::class, 'finishPayment'])->name('finishPayment');
 Route::get('cancelPayment', [PaymentController::class, 'cancelPayment'])->name('cancelPayment');
