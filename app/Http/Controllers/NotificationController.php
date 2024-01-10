@@ -19,7 +19,7 @@ class NotificationController extends Controller
             $page = $request->input('page', 1);
             $sortOrder = $request->input('sort_order', 'desc');
             $user_id = $this->getCurrentLoggedUserBySanctum()->id;
-            
+
             // Add a status filter if 'status' is provided in the request
             $status = $request->input('status');
             $paymentQuery = UserNotification::where('user_id', $user_id);

@@ -4,10 +4,14 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserAccountResource\Pages;
 use App\Models\UserAccount;
+use Carbon\Carbon;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -52,16 +56,30 @@ class UserAccountResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
-                    ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable()
+                    ->label('User'),
                 Tables\Columns\TextColumn::make('account_name')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('account_currency')
-                    ->searchable(),
+                    ->searchable()
+                    ->label("Currency")
+                    ->toggleable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('account_balance')
-                    ->searchable(),
+                    ->searchable()
+                    ->label("Balance")
+                    ->toggleable()
+                    ->sortable()
+                    ->money("UGX", true),
                 Tables\Columns\TextColumn::make('pin')
-                    ->searchable(),
+                    ->searchable()
+                    ->label("Pin")
+                    ->toggleable()
+                    ->sortable(),
                 Tables\Columns\IconColumn::make('show_wallet_balance')
                     ->boolean(),
                 Tables\Columns\IconColumn::make('is_active')
@@ -81,6 +99,37 @@ class UserAccountResource extends Resource
             ])
             ->filters([
                 //Tables\Filters\TrashedFilter::make(),
+                Filter::make('created_at')
+                    ->form([
+                        DatePicker::make('created_from'),
+                        DatePicker::make('created_until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['from'] ?? null) {
+                            $indicators[] = Indicator::make('Created from ' . Carbon::parse($data['from'])->toFormattedDateString())
+                                ->removeField('from');
+                        }
+
+                        if ($data['until'] ?? null) {
+                            $indicators[] = Indicator::make('Created until ' . Carbon::parse($data['until'])->toFormattedDateString())
+                                ->removeField('until');
+                        }
+
+                        return $indicators;
+                    }),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

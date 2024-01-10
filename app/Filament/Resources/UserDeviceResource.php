@@ -4,10 +4,14 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserDeviceResource\Pages;
 use App\Models\UserDevice;
+use Carbon\Carbon;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -51,24 +55,51 @@ class UserDeviceResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
-                    ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable()
+                    ->toggleable()
+                    ->label("User"),
                 Tables\Columns\TextColumn::make('device_id')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable()
+                    ->label("Device Id")
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('device_model')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable()
+                    ->label("Device Model")
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('device_manufacturer')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable()
+                    ->label("Device Manufacturer")
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('app_version')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable()
+                    ->label("App Version")
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('device_os')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable()
+                    ->label("Device OS")
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('device_os_version')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable()
+                    ->label("Device OS Version")
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('device_user_agent')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable()
+                    ->label("User Agent")
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('device_type')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable()
+                    ->label("Device Type")
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
@@ -84,6 +115,37 @@ class UserDeviceResource extends Resource
             ])
             ->filters([
                 //Tables\Filters\TrashedFilter::make(),
+                Filter::make('created_at')
+                    ->form([
+                        DatePicker::make('created_from'),
+                        DatePicker::make('created_until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['from'] ?? null) {
+                            $indicators[] = Indicator::make('Created from ' . Carbon::parse($data['from'])->toFormattedDateString())
+                                ->removeField('from');
+                        }
+
+                        if ($data['until'] ?? null) {
+                            $indicators[] = Indicator::make('Created until ' . Carbon::parse($data['until'])->toFormattedDateString())
+                                ->removeField('until');
+                        }
+
+                        return $indicators;
+                    }),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

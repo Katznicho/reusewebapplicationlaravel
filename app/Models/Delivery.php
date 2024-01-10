@@ -25,7 +25,7 @@ class Delivery extends Model
         'product_id',
         'proof',
         'community_id',
-        'payment_id'
+        'payment_id',
     ];
 
     //cast proof to an array

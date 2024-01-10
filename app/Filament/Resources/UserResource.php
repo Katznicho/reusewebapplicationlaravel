@@ -6,11 +6,18 @@ use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Actions\Action;
+use App\Filament\Resources\UserResource\RelationManagers;
+use Carbon\Carbon;
+use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\Indicator;
 
 class UserResource extends Resource
 {
@@ -97,11 +104,71 @@ class UserResource extends Resource
             ])
             ->filters([
                 //Tables\Filters\TrashedFilter::make(),
+                Filter::make('created_at')
+                    ->form([
+                        DatePicker::make('created_from'),
+                        DatePicker::make('created_until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['from'] ?? null) {
+                            $indicators[] = Indicator::make('Created from ' . Carbon::parse($data['from'])->toFormattedDateString())
+                                ->removeField('from');
+                        }
+
+                        if ($data['until'] ?? null) {
+                            $indicators[] = Indicator::make('Created until ' . Carbon::parse($data['until'])->toFormattedDateString())
+                                ->removeField('until');
+                        }
+
+                        return $indicators;
+                    }),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+
+                Action::make("makeAdmin")
+                    ->color("success")
+                    ->visible(fn (User $user) => $user->is_admin == 0)
+                    ->requiresConfirmation()
+                    ->action(function (User $user) {
+                        $user->is_admin = 1;
+                        $user->save();
+                        Notification::make()
+                            ->success()
+                            ->title("Added Admin")
+                            ->body("user $user->name is now an admin")
+                            ->send();
+                    }),
+                Action::make("removeAdmin")
+                    ->color("danger")
+                    ->visible(fn (User $user) => $user->is_admin == 1)
+                    ->requiresConfirmation()
+                    ->action(function (User $user) {
+                        $user->is_admin = 0;
+                        $user->save();
+                        Notification::make()
+                            ->success()
+                            ->title("Added Admin")
+                            ->body("user $user->name is now an admin")
+                            ->send();
+                    })
+
             ])
+            ->headerActions([])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -114,7 +181,13 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\ProductsRelationManager::class,
+            RelationManagers\PaymentsRelationManager::class,
+            RelationManagers\DeliveriesRelationManager::class,
+            RelationManagers\DonationsRelationManager::class,
+            RelationManagers\AccountRelationManager::class,
+            RelationManagers\DeviceRelationManager::class,
+            RelationManagers\NotificationRelationManager::class,
         ];
     }
 

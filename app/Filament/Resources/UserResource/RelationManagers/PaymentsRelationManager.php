@@ -1,71 +1,104 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\UserResource\RelationManagers;
 
-use App\Filament\Resources\UserNotificationResource\Pages;
-use App\Models\UserNotification;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class UserNotificationResource extends Resource
+class PaymentsRelationManager extends RelationManager
 {
-    protected static ?string $model = UserNotification::class;
+    protected static string $relationship = 'payments';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
-    protected static ?string $navigationGroup = 'Users';
-
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('user_id')
-                    ->relationship('user', 'name')
-                    ->required(),
-                Forms\Components\TextInput::make('type')
+                Forms\Components\TextInput::make('payment_id')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('title')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('message')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Toggle::make('is_read')
-                    ->required(),
             ]);
     }
 
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
+            ->recordTitleAttribute('payment_id')
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
                     ->searchable()
                     ->sortable()
                     ->toggleable()
-                    ->label('User'),
+                    ->copyable()
+                    ->label('User Name'),
+                Tables\Columns\TextColumn::make('product.name')
+                    ->searchable()
+                    ->toggleable()
+                    ->copyable()
+                    ->sortable()
+                    ->label('Product Name'),
                 Tables\Columns\TextColumn::make('type')
                     ->searchable()
                     ->sortable()
-                    ->toggleable(),
-                Tables\Columns\TextColumn::make('title')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('message')
+                    ->toggleable()
+                    ->copyable()
+                    ->label('Type'),
+                Tables\Columns\TextColumn::make('amount')
                     ->searchable()
                     ->sortable()
-                    ->toggleable(),
-                Tables\Columns\IconColumn::make('is_read')
+                    ->toggleable()
+                    ->copyable()
+                    ->money('UGX', true)
+                    ->label('Amount'),
+                Tables\Columns\TextColumn::make('phone_number')
+                    ->searchable()
+                    ->toggleable()
+                    ->copyable()
+                    ->sortable()
+                    ->label('Phone Number'),
+                Tables\Columns\TextColumn::make('payment_mode')
+                    ->searchable()
+                    ->toggleable()
+                    ->copyable()
+                    ->sortable()
+                    ->label('Payment Mode'),
+                Tables\Columns\TextColumn::make('payment_method')
+                    ->searchable()
+                    ->toggleable()
+                    ->copyable()
+                    ->sortable()
+                    ->label('Payment Method'),
+                Tables\Columns\IconColumn::make('is_annyomous')
                     ->boolean(),
+                Tables\Columns\TextColumn::make('reference')
+                    ->searchable()
+                    ->toggleable()
+                    ->copyable()
+                    ->sortable()
+                    ->label('Reference'),
+                Tables\Columns\TextColumn::make('status')
+                    ->searchable()
+                    ->toggleable()
+                    ->copyable()
+                    ->sortable()
+                    ->label('Status'),
+                Tables\Columns\TextColumn::make('order_tracking_id')
+                    ->searchable()
+                    ->toggleable()
+                    ->copyable()
+                    ->sortable()
+                    ->label('Tracking Id'),
+                Tables\Columns\TextColumn::make('OrderNotificationType')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
@@ -81,6 +114,14 @@ class UserNotificationResource extends Resource
             ])
             ->filters([
                 //Tables\Filters\TrashedFilter::make(),
+                SelectFilter::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'completed' => 'Completed',
+                        'failed' => 'Failed',
+
+                    ])
+                    ->label('Status'),
                 Filter::make('created_at')
                     ->form([
                         DatePicker::make('created_from'),
@@ -113,41 +154,17 @@ class UserNotificationResource extends Resource
                         return $indicators;
                     }),
             ])
+            ->headerActions([
+                Tables\Actions\CreateAction::make(),
+            ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-                    Tables\Actions\ForceDeleteBulkAction::make(),
-                    Tables\Actions\RestoreBulkAction::make(),
                 ]),
-            ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListUserNotifications::route('/'),
-            'create' => Pages\CreateUserNotification::route('/create'),
-            'view' => Pages\ViewUserNotification::route('/{record}'),
-            'edit' => Pages\EditUserNotification::route('/{record}/edit'),
-        ];
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
             ]);
     }
 }

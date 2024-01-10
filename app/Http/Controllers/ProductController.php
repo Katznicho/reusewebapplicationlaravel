@@ -99,7 +99,6 @@ class ProductController extends Controller
             //     return $product;
             // });
 
-
             $response = [
                 'data' => $res->items(),
                 'pagination' => [
@@ -157,6 +156,9 @@ class ProductController extends Controller
         }
     }
 
+    //functon to get community delivery
+    
+
     //confirm delivery by setting the owner_status to Accepted
     public function confirmDelivery(Request $request)
     {
@@ -168,6 +170,7 @@ class ProductController extends Controller
             $delivery->update([
                 'status' => config('status.delivery_owner_status.Approved'),
             ]);
+
             return response()->json(['success' => true, 'message' => 'Delivery confirmed']);
         } catch (\Throwable $th) {
             //throw $th;
@@ -323,6 +326,7 @@ class ProductController extends Controller
     {
         try {
             $categories = Category::all();
+
             return response()->json(['success' => true, 'data' => $categories]);
         } catch (\Throwable $th) {
             //throw $th;

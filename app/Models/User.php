@@ -26,7 +26,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return true;
+        return $this->is_admin ? true : false;
     }
 
     /**
@@ -45,7 +45,8 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         'otp',
         'otp_send_time',
         'device_token',
-        'email_verified_at'
+        'email_verified_at',
+        'avatar',
 
     ];
 
@@ -93,7 +94,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     }
 
     //user has many user notifications
-    public function notifications(): HasMany
+    public function notification(): HasMany
     {
         return $this->hasMany(UserNotification::class);
     }
@@ -115,4 +116,6 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     {
         return $this->hasOne(UserLocation::class);
     }
+
+    
 }

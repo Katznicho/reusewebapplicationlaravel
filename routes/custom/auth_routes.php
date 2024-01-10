@@ -23,5 +23,6 @@ Route::prefix('auth')->group(function () {
         Route::post('updateAvatar', [AuthController::class, 'updateAvatar']);
         Route::post('saveDeviceInfo', [AuthController::class, 'saveDeviceInfo']);
         Route::post('hasWalletAccount', [AuthController::class, 'hasWalletAccount']);
+        Route::post("updateUserAvatarUrl", [AuthController::class, 'updateUserAvatarUrl']);
     });
 });

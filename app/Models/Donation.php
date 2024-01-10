@@ -33,4 +33,11 @@ class Donation extends Model
     {
         return $this->hasOne(Payment::class, 'donation_id', 'id');
     }
+
+    //a donation belongs to a product
+    public function product(): BelongsTo
+    {
+
+        return $this->belongsTo(Product::class);
+    }
 }

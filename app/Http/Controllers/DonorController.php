@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Models\Delivery;
+use App\Models\Payment;
 use App\Models\Product;
 use App\Models\User;
 use App\Traits\UserTrait;
-use App\Models\Payment;
 use Illuminate\Http\Request;
 
 class DonorController extends Controller
@@ -70,7 +69,7 @@ class DonorController extends Controller
                 'sum_payments' => $sum_payments,
                 'total_deliveries' => $total_deliveries,
                 'total_payments' => $total_payments,
-                'total_communities' => $total_community
+                'total_communities' => $total_community,
 
             ];
 
