@@ -54,7 +54,6 @@ class CommunityController extends Controller
         }
     }
 
-
     public function getCommunityDeliveries(Request $request)
     {
         try {
@@ -67,7 +66,7 @@ class CommunityController extends Controller
             $status = $request->input('status');
             $paymentQuery = Delivery::where('community_id', $user_id);
 
-            if (!empty($status)) {
+            if (! empty($status)) {
                 $paymentQuery->where('status', $status);
             }
 
@@ -87,6 +86,7 @@ class CommunityController extends Controller
                     'total' => $res->total(),
                 ],
             ];
+
             return response()->json(['success' => true, 'data' => $response]);
         } catch (\Throwable $th) {
             //throw $th;

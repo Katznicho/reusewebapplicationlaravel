@@ -59,46 +59,46 @@ class UserDeviceResource extends Resource
                     ->searchable()
                     ->toggleable()
                     ->toggleable()
-                    ->label("User"),
+                    ->label('User'),
                 Tables\Columns\TextColumn::make('device_id')
                     ->searchable()
                     ->toggleable()
-                    ->label("Device Id")
+                    ->label('Device Id')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('device_model')
                     ->searchable()
                     ->toggleable()
-                    ->label("Device Model")
+                    ->label('Device Model')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('device_manufacturer')
                     ->searchable()
                     ->toggleable()
-                    ->label("Device Manufacturer")
+                    ->label('Device Manufacturer')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('app_version')
                     ->searchable()
                     ->toggleable()
-                    ->label("App Version")
+                    ->label('App Version')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('device_os')
                     ->searchable()
                     ->toggleable()
-                    ->label("Device OS")
+                    ->label('Device OS')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('device_os_version')
                     ->searchable()
                     ->toggleable()
-                    ->label("Device OS Version")
+                    ->label('Device OS Version')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('device_user_agent')
                     ->searchable()
                     ->toggleable()
-                    ->label("User Agent")
+                    ->label('User Agent')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('device_type')
                     ->searchable()
                     ->toggleable()
-                    ->label("Device Type")
+                    ->label('Device Type')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
@@ -135,12 +135,12 @@ class UserDeviceResource extends Resource
                         $indicators = [];
 
                         if ($data['from'] ?? null) {
-                            $indicators[] = Indicator::make('Created from ' . Carbon::parse($data['from'])->toFormattedDateString())
+                            $indicators[] = Indicator::make('Created from '.Carbon::parse($data['from'])->toFormattedDateString())
                                 ->removeField('from');
                         }
 
                         if ($data['until'] ?? null) {
-                            $indicators[] = Indicator::make('Created until ' . Carbon::parse($data['until'])->toFormattedDateString())
+                            $indicators[] = Indicator::make('Created until '.Carbon::parse($data['until'])->toFormattedDateString())
                                 ->removeField('until');
                         }
 

@@ -69,14 +69,14 @@ class DonationResource extends Resource
                     ->toggleable()
                     ->copyable()
                     ->sortable()
-                    ->label("Description"),
+                    ->label('Description'),
                 Tables\Columns\TextColumn::make('amount')
                     ->searchable()
                     ->toggleable()
                     ->copyable()
                     ->sortable()
                     ->money('UGX', true)
-                    ->label("Amount"),
+                    ->label('Amount'),
                 Tables\Columns\IconColumn::make('is_annyomous')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -109,12 +109,12 @@ class DonationResource extends Resource
                         $indicators = [];
 
                         if ($data['from'] ?? null) {
-                            $indicators[] = Indicator::make('Created from ' . Carbon::parse($data['from'])->toFormattedDateString())
+                            $indicators[] = Indicator::make('Created from '.Carbon::parse($data['from'])->toFormattedDateString())
                                 ->removeField('from');
                         }
 
                         if ($data['until'] ?? null) {
-                            $indicators[] = Indicator::make('Created until ' . Carbon::parse($data['until'])->toFormattedDateString())
+                            $indicators[] = Indicator::make('Created until '.Carbon::parse($data['until'])->toFormattedDateString())
                                 ->removeField('until');
                         }
 

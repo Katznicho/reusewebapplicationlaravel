@@ -12,7 +12,6 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class DonationsRelationManager extends RelationManager
 {
@@ -53,14 +52,14 @@ class DonationsRelationManager extends RelationManager
                     ->toggleable()
                     ->copyable()
                     ->sortable()
-                    ->label("Description"),
+                    ->label('Description'),
                 Tables\Columns\TextColumn::make('amount')
                     ->searchable()
                     ->toggleable()
                     ->copyable()
                     ->sortable()
                     ->money('UGX', true)
-                    ->label("Amount"),
+                    ->label('Amount'),
                 Tables\Columns\IconColumn::make('is_annyomous')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -93,12 +92,12 @@ class DonationsRelationManager extends RelationManager
                         $indicators = [];
 
                         if ($data['from'] ?? null) {
-                            $indicators[] = Indicator::make('Created from ' . Carbon::parse($data['from'])->toFormattedDateString())
+                            $indicators[] = Indicator::make('Created from '.Carbon::parse($data['from'])->toFormattedDateString())
                                 ->removeField('from');
                         }
 
                         if ($data['until'] ?? null) {
-                            $indicators[] = Indicator::make('Created until ' . Carbon::parse($data['until'])->toFormattedDateString())
+                            $indicators[] = Indicator::make('Created until '.Carbon::parse($data['until'])->toFormattedDateString())
                                 ->removeField('until');
                         }
 

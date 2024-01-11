@@ -12,7 +12,6 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class AccountRelationManager extends RelationManager
 {
@@ -44,18 +43,18 @@ class AccountRelationManager extends RelationManager
                     ->sortable(),
                 Tables\Columns\TextColumn::make('account_currency')
                     ->searchable()
-                    ->label("Currency")
+                    ->label('Currency')
                     ->toggleable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('account_balance')
                     ->searchable()
-                    ->label("Balance")
+                    ->label('Balance')
                     ->toggleable()
                     ->sortable()
-                    ->money("UGX", true),
+                    ->money('UGX', true),
                 Tables\Columns\TextColumn::make('pin')
                     ->searchable()
-                    ->label("Pin")
+                    ->label('Pin')
                     ->toggleable()
                     ->sortable(),
                 Tables\Columns\IconColumn::make('show_wallet_balance')
@@ -97,12 +96,12 @@ class AccountRelationManager extends RelationManager
                         $indicators = [];
 
                         if ($data['from'] ?? null) {
-                            $indicators[] = Indicator::make('Created from ' . Carbon::parse($data['from'])->toFormattedDateString())
+                            $indicators[] = Indicator::make('Created from '.Carbon::parse($data['from'])->toFormattedDateString())
                                 ->removeField('from');
                         }
 
                         if ($data['until'] ?? null) {
-                            $indicators[] = Indicator::make('Created until ' . Carbon::parse($data['until'])->toFormattedDateString())
+                            $indicators[] = Indicator::make('Created until '.Carbon::parse($data['until'])->toFormattedDateString())
                                 ->removeField('until');
                         }
 

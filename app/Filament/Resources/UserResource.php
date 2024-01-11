@@ -3,21 +3,21 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
+use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
+use Carbon\Carbon;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Tables\Actions\Action;
-use App\Filament\Resources\UserResource\RelationManagers;
-use Carbon\Carbon;
-use Filament\Forms\Components\DatePicker;
-use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\Indicator;
 
 class UserResource extends Resource
 {
@@ -124,12 +124,12 @@ class UserResource extends Resource
                         $indicators = [];
 
                         if ($data['from'] ?? null) {
-                            $indicators[] = Indicator::make('Created from ' . Carbon::parse($data['from'])->toFormattedDateString())
+                            $indicators[] = Indicator::make('Created from '.Carbon::parse($data['from'])->toFormattedDateString())
                                 ->removeField('from');
                         }
 
                         if ($data['until'] ?? null) {
-                            $indicators[] = Indicator::make('Created until ' . Carbon::parse($data['until'])->toFormattedDateString())
+                            $indicators[] = Indicator::make('Created until '.Carbon::parse($data['until'])->toFormattedDateString())
                                 ->removeField('until');
                         }
 
@@ -140,8 +140,8 @@ class UserResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
 
-                Action::make("makeAdmin")
-                    ->color("success")
+                Action::make('makeAdmin')
+                    ->color('success')
                     ->visible(fn (User $user) => $user->is_admin == 0)
                     ->requiresConfirmation()
                     ->action(function (User $user) {
@@ -149,12 +149,12 @@ class UserResource extends Resource
                         $user->save();
                         Notification::make()
                             ->success()
-                            ->title("Added Admin")
+                            ->title('Added Admin')
                             ->body("user $user->name is now an admin")
                             ->send();
                     }),
-                Action::make("removeAdmin")
-                    ->color("danger")
+                Action::make('removeAdmin')
+                    ->color('danger')
                     ->visible(fn (User $user) => $user->is_admin == 1)
                     ->requiresConfirmation()
                     ->action(function (User $user) {
@@ -162,10 +162,10 @@ class UserResource extends Resource
                         $user->save();
                         Notification::make()
                             ->success()
-                            ->title("Added Admin")
+                            ->title('Added Admin')
                             ->body("user $user->name is now an admin")
                             ->send();
-                    })
+                    }),
 
             ])
             ->headerActions([])
