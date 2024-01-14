@@ -209,12 +209,12 @@ class ProductResource extends Resource
                         $indicators = [];
 
                         if ($data['from'] ?? null) {
-                            $indicators[] = Indicator::make('Created from '.Carbon::parse($data['from'])->toFormattedDateString())
+                            $indicators[] = Indicator::make('Created from ' . Carbon::parse($data['from'])->toFormattedDateString())
                                 ->removeField('from');
                         }
 
                         if ($data['until'] ?? null) {
-                            $indicators[] = Indicator::make('Created until '.Carbon::parse($data['until'])->toFormattedDateString())
+                            $indicators[] = Indicator::make('Created until ' . Carbon::parse($data['until'])->toFormattedDateString())
                                 ->removeField('until');
                         }
 
@@ -247,9 +247,9 @@ class ProductResource extends Resource
     {
         return [
             'index' => Pages\ListProducts::route('/'),
-            // 'create' => Pages\CreateProduct::route('/create'),
+            'create' => Pages\CreateProduct::route('/create'),
             'view' => Pages\ViewProduct::route('/{record}'),
-            // 'edit' => Pages\EditProduct::route('/{record}/edit'),
+            'edit' => Pages\EditProduct::route('/{record}/edit'),
             'view-images' => Pages\ViewImages::route('/{record}/view-images'),
         ];
     }

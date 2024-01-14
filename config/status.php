@@ -32,5 +32,10 @@ return [
         'Delivered' => 'Delivered',
         'Rejected' => 'Rejected',
     ],
+    'verification_status' => [
+        'Pending' => 'Pending',
+        'Verified' => 'Verified',
+        'Rejected' => 'Rejected',
+    ],
 
 ];

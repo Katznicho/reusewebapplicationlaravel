@@ -36,6 +36,9 @@ class Product extends Model
         'delivery_id',
         'community_id',
         'available',
+        'rating',
+        'size',
+        'quantity'
 
     ];
 

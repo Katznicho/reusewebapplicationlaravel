@@ -2,7 +2,7 @@
 
     @php
     $record = $this->getRecord();
-    $images = json_decode($record->images, true) ?? [];
+    $images = $record->images ?? [];
     $coverImage = $record->cover_image ?? null;
     @endphp
 

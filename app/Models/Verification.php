@@ -15,6 +15,9 @@ class Verification extends Model
         'back_national_id',
         'passport',
         'status',
+        'reason',
+        'document_url',
+        'passport',
     ];
 
     public function user()

@@ -32,6 +32,7 @@ class VerificationResource extends Resource
                 Forms\Components\TextInput::make('back_national_id')
                     ->maxLength(255),
                 Forms\Components\TextInput::make('passport')
+                    ->label("Community Document")
                     ->maxLength(255),
                 Forms\Components\TextInput::make('document_url')
                     ->maxLength(255),
@@ -44,19 +45,22 @@ class VerificationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('front_national_id')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('back_national_id')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('passport')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('document_url')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('status')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable()
+                    ->toggleable()
+                    ->label('User'),
+                // Tables\Columns\TextColumn::make('front_national_id')
+                //     ->searchable(),
+                // Tables\Columns\TextColumn::make('back_national_id')
+                //     ->searchable(),
+                // Tables\Columns\TextColumn::make('passport')
+                //     ->searchable(),
+                // Tables\Columns\TextColumn::make('document_url')
+                //     ->searchable(),
+                // Tables\Columns\TextColumn::make('status')
+                //     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -95,7 +99,9 @@ class VerificationResource extends Resource
             'index' => Pages\ListVerifications::route('/'),
             'create' => Pages\CreateVerification::route('/create'),
             'view' => Pages\ViewVerification::route('/{record}'),
-            'edit' => Pages\EditVerification::route('/{record}/edit'),
+            'view-donor-images' => Pages\ViewDonorImages::route('/{record}/view-donor-images'),
+
+            // 'edit' => Pages\EditVerification::route('/{record}/edit'),
         ];
     }
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,3 +26,6 @@ Route::get('/', function () {
 
 Route::get('finishPayment', [PaymentController::class, 'finishPayment'])->name('finishPayment');
 Route::get('cancelPayment', [PaymentController::class, 'cancelPayment'])->name('cancelPayment');
+
+Route::get('/{record}/view', [DocumentController::class, 'viewDocument'])->name('view-document');
+Route::get("/{record}/download", [DocumentController::class, 'downloadDocument'])->name('download-document');
