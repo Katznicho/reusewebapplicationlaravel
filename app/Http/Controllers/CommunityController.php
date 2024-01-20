@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CommunityCategory;
+use App\Models\CommunityDetails;
 use App\Models\Delivery;
 use App\Models\Payment;
 use App\Models\Product;
@@ -67,7 +68,7 @@ class CommunityController extends Controller
             $status = $request->input('status');
             $paymentQuery = Delivery::where('community_id', $user_id);
 
-            if (! empty($status)) {
+            if (!empty($status)) {
                 $paymentQuery->where('status', $status);
             }
 
@@ -131,44 +132,90 @@ class CommunityController extends Controller
     public function storeCommunityDetails(Request $request)
     {
         try {
-            //'purpose',
-            // 'location',
-            //longitude
-            //latitude
-            // 'community_category_id',
-            // 'user_id',
-            // 'contact_person',
-            // 'contact_number',
-            // 'contact_person_email',
-            // 'contact_person_role',
-            // 'website',
-            // 'total_members',
-            // 'total_members_women',
-            // 'total_members_men',
-            // 'year_started',
-            // 'leader_name',
-            // 'leader_role',
-            // 'leader_email',
-            // 'leader_contact',
-            // 'images',
+            $request->validate([
+                'purpose' => 'required',
+                'location' => 'required',
+                'community_category_id' => 'required',
+                'user_id' => 'required',
+                'contact_person' => 'required',
+                'contact_number' => 'required',
+                'contact_person_email' => 'required',
+                'contact_person_role' => 'required',
+                // 'website' => 'required',
+                'total_members' => 'required',
+                'total_members_women' => 'required',
+                'total_members_men' => 'required',
+                'year_started' => 'required',
+                'leader_name' => 'required',
+                'leader_role' => 'required',
+                'leader_email' => 'required',
+                'leader_contact' => 'required',
+                'images' => 'required|array',
+            ]);
 
+            $user_id = $this->getCurrentLoggedUserBySanctum()->id;
+
+            //update or create
+            $community = CommunityDetails::updateOrCreate([
+                'user_id' => $user_id,
+            ], [
+                'purpose' => $request->purpose,
+                'location' => $request->location,
+                'longitude' => $request->longitude,
+                'latitude' => $request->latitude,
+                'community_category_id' => $request->community_category_id,
+                'user_id' => $user_id,
+                'contact_person' => $request->contact_person,
+                'contact_number' => $request->contact_number,
+                'contact_person_email' => $request->contact_person_email,
+                'contact_person_role' => $request->contact_person_role,
+                'website' => $request->website,
+                'total_members' => $request->total_members,
+                'total_members_women' => $request->total_members_women,
+                'total_members_men' => $request->total_members_men,
+                'year_started' => $request->year_started,
+                'leader_name' => $request->leader_name,
+                'leader_role' => $request->leader_role,
+                'leader_email' => $request->leader_email,
+                'leader_contact' => $request->leader_contact,
+                'images' => $request->images,
+            ]);
+
+
+            return response()->json(['success' => true, 'data' => $community]);
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(['success' => false, 'message' => $th->getMessage()]);
         }
-
     }
 
-    public function getAllCommunityCatgeories(Request $request){
+    public function getStoredCommunityDetails(Request $request)
+    {
 
+        try {
+            $user = $this->getCurrentLoggedUserBySanctum();
+            $community = CommunityDetails::where('user_id', $user->id)->first();
+            if ($community) {
+                return response()->json(['success' => true, 'data' => $community]);
+            } else {
+                return response()->json(['success' => true, 'data' => []]);
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(['success' => false, 'message' => $th->getMessage()]);
+        }
+    }
+
+    public function getAllCommunityCatgeories(Request $request)
+    {
         try {
             //code...
             $categories = CommunityCategory::all();
+
             return response()->json(['success' => true, 'data' => $categories]);
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(['success' => false, 'message' => $th->getMessage()]);
         }
-    
     }
 }

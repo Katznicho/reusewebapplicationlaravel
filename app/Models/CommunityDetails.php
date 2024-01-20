@@ -32,6 +32,11 @@ class CommunityDetails extends Model
         'images',
     ];
 
+    //cast iamges to array
+    protected $casts = [
+        'images' => 'array',
+    ];
+
     //relationships
     public function user()
     {

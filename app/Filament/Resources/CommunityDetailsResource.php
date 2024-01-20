@@ -156,12 +156,12 @@ class CommunityDetailsResource extends Resource
                         $indicators = [];
 
                         if ($data['from'] ?? null) {
-                            $indicators[] = Indicator::make('Created from ' . Carbon::parse($data['from'])->toFormattedDateString())
+                            $indicators[] = Indicator::make('Created from '.Carbon::parse($data['from'])->toFormattedDateString())
                                 ->removeField('from');
                         }
 
                         if ($data['until'] ?? null) {
-                            $indicators[] = Indicator::make('Created until ' . Carbon::parse($data['until'])->toFormattedDateString())
+                            $indicators[] = Indicator::make('Created until '.Carbon::parse($data['until'])->toFormattedDateString())
                                 ->removeField('until');
                         }
 
