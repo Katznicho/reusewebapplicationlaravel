@@ -33,7 +33,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login(Login::class)
             ->passwordReset()
-            ->sidebarWidth('16rem')
+            // ->sidebarWidth('16rem')
             ->maxContentWidth(MaxWidth::Full)
             ->brandName('Reuse')
             ->profile()
@@ -57,7 +57,7 @@ class AdminPanelProvider extends PanelProvider
                 'Donations',
                 'Categories',
                 'Deliveries',
-                
+
             ])
             ->plugins([
                 FilamentBackgroundsPlugin::make()

@@ -7,6 +7,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('createCommunity', [\App\Http\Controllers\CommunityController::class, 'createCommunity']);
     Route::post('getCommunityTotals', [\App\Http\Controllers\CommunityController::class, 'getCommunityTotals']);
     Route::get('getCommunityDeliveries', [\App\Http\Controllers\CommunityController::class, 'getCommunityDeliveries']);
+    Route::post("storeCommunityDetails", [\App\Http\Controllers\CommunityController::class, 'storeCommunityDetails']);
 });
 
 Route::get('getCommunitysByPage', [\App\Http\Controllers\CommunityController::class, 'getCommunitysByPage']);

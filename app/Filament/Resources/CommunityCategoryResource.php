@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CommunityCategoryResource\Pages;
-use App\Filament\Resources\CommunityCategoryResource\RelationManagers;
 use App\Models\CommunityCategory;
 use Carbon\Carbon;
 use Filament\Forms;
@@ -84,12 +83,12 @@ class CommunityCategoryResource extends Resource
                         $indicators = [];
 
                         if ($data['from'] ?? null) {
-                            $indicators[] = Indicator::make('Created from ' . Carbon::parse($data['from'])->toFormattedDateString())
+                            $indicators[] = Indicator::make('Created from '.Carbon::parse($data['from'])->toFormattedDateString())
                                 ->removeField('from');
                         }
 
                         if ($data['until'] ?? null) {
-                            $indicators[] = Indicator::make('Created until ' . Carbon::parse($data['until'])->toFormattedDateString())
+                            $indicators[] = Indicator::make('Created until '.Carbon::parse($data['until'])->toFormattedDateString())
                                 ->removeField('until');
                         }
 

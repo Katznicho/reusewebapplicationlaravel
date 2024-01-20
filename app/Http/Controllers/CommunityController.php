@@ -126,4 +126,34 @@ class CommunityController extends Controller
             return response()->json(['success' => false, 'message' => $th->getMessage()]);
         }
     }
+
+    public function storeCommunityDetails(Request $request){
+        try {
+            //'purpose',
+        // 'location',
+        //longitude
+        //latitude
+        // 'community_category_id',
+        // 'user_id',
+        // 'contact_person',
+        // 'contact_number',
+        // 'contact_person_email',
+        // 'contact_person_role',
+        // 'website',
+        // 'total_members',
+        // 'total_members_women',
+        // 'total_members_men',
+        // 'year_started',
+        // 'leader_name',
+        // 'leader_role',
+        // 'leader_email',
+        // 'leader_contact',
+        // 'images',
+    
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(['success' => false, 'message' => $th->getMessage()]);
+        }
+
+    }
 }
