@@ -27,6 +27,6 @@ Route::prefix('auth')->group(function () {
 
         Route::post('communityUploadVerificationDocument', [AuthController::class, 'communityUploadVerificationDocument']);
         Route::post('donorUpdateVerificationDocument', [AuthController::class, 'donorUpdateVerificationDocument']);
-        Route::post("updateUserLocation", [AuthController::class, 'updateUserLocation']);
+        Route::post('updateUserLocation', [AuthController::class, 'updateUserLocation']);
     });
 });

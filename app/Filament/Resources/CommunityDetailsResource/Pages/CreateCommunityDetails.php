@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\CommunityDetailsResource\Pages;
 
 use App\Filament\Resources\CommunityDetailsResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateCommunityDetails extends CreateRecord

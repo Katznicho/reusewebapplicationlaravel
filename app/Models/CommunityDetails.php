@@ -37,4 +37,10 @@ class CommunityDetails extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    //relationships
+    public function communityCategory()
+    {
+        return $this->belongsTo(CommunityCategory::class);
+    }
 }
