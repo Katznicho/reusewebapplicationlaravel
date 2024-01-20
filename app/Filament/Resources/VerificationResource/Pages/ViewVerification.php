@@ -3,17 +3,17 @@
 namespace App\Filament\Resources\VerificationResource\Pages;
 
 use App\Filament\Resources\VerificationResource;
+use App\Mail\Payment as VerificationMail;
 use App\Models\User;
 use App\Models\UserDevice;
 use App\Models\UserNotification;
 use App\Models\Verification;
 use App\Services\FirebaseService;
 use Filament\Actions;
-use Filament\Resources\Pages\ViewRecord;
 use Filament\Actions\Action;
-use App\Mail\Payment as VerificationMail;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Support\Facades\Mail;
 
 class ViewVerification extends ViewRecord
@@ -24,13 +24,13 @@ class ViewVerification extends ViewRecord
     {
         return [
             // Actions\EditAction::make(),
-            Action::make("Agreement")
+            Action::make('Agreement')
                 // ->icon("heroicon-o-document-download")
                 ->url(fn (Verification $record) => route('download-document', $record))
                 ->openUrlInNewTab()
-                ->color("success"),
+                ->color('success'),
 
-            Action::make("CommunityDocument")
+            Action::make('CommunityDocument')
                 ->url(fn (Verification $record) => route('view-document', $record))
                 ->visible(function (Verification $record) {
                     $user = User::find($record->user_id);
@@ -41,9 +41,9 @@ class ViewVerification extends ViewRecord
                     }
                 })
                 ->openUrlInNewTab()
-                ->color("success"),
+                ->color('success'),
 
-            Action::make("DonorImages")
+            Action::make('DonorImages')
                 ->visible(function (Verification $record) {
                     $user = User::find($record->user_id);
                     if ($user->role !== config('user_roles.user_roles.RECEIVER')) {
@@ -55,16 +55,16 @@ class ViewVerification extends ViewRecord
                 ->action(function (Verification $record) {
                     return redirect()->route('filament.admin.resources.verifications.view-donor-images', $record->id);
                 })
-                ->color("success"),
+                ->color('success'),
 
-            Action::make("verifyUser")
-                ->icon("heroicon-o-check-circle")
+            Action::make('verifyUser')
+                ->icon('heroicon-o-check-circle')
                 ->requiresConfirmation()
                 ->visible(fn (Verification $record) => $record->status === config('status.verification_status.Pending') || $record->status === config('status.verification_status.Rejected'))
                 ->action(function (Verification $record) {
                     $record->update([
                         'status' => config('status.verification_status.Verified'),
-                        'reason' => "Your now a verified user",
+                        'reason' => 'Your now a verified user',
                     ]);
 
                     $user = User::find($record->user_id);
@@ -87,7 +87,7 @@ class ViewVerification extends ViewRecord
 
                     UserNotification::create([
                         'user_id' => $record->user_id,
-                        'title' => "Verified Successfully",
+                        'title' => 'Verified Successfully',
                         'message' => 'Your account has been verified',
                         'type' => 'User Verification',
                     ]);
@@ -99,13 +99,13 @@ class ViewVerification extends ViewRecord
                         ->send();
                 }),
 
-            Action::make("rejectUser")
-                ->icon("heroicon-o-x-circle")
+            Action::make('rejectUser')
+                ->icon('heroicon-o-x-circle')
                 ->visible(fn (Verification $record) => $record->status === config('status.verification_status.Pending') || $record->status === config('status.verification_status.Rejected'))
                 ->requiresConfirmation()
-                ->color("danger")
+                ->color('danger')
                 ->form([
-                    TextInput::make('reason')
+                    TextInput::make('reason'),
                 ])
                 ->action(function (Verification $record, array $data) {
                     $record->update([
@@ -132,7 +132,7 @@ class ViewVerification extends ViewRecord
 
                     UserNotification::create([
                         'user_id' => $record->user_id,
-                        'title' => "Verification Rejected",
+                        'title' => 'Verification Rejected',
                         'message' => 'Your account has been rejected',
                         'type' => 'User Verification',
                     ]);

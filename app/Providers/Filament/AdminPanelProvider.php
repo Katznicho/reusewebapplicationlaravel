@@ -57,6 +57,7 @@ class AdminPanelProvider extends PanelProvider
                 'Donations',
                 'Categories',
                 'Deliveries',
+                
             ])
             ->plugins([
                 FilamentBackgroundsPlugin::make()

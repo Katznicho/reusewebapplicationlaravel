@@ -38,7 +38,7 @@ class Product extends Model
         'available',
         'rating',
         'size',
-        'quantity'
+        'quantity',
 
     ];
 

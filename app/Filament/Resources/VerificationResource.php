@@ -32,7 +32,7 @@ class VerificationResource extends Resource
                 Forms\Components\TextInput::make('back_national_id')
                     ->maxLength(255),
                 Forms\Components\TextInput::make('passport')
-                    ->label("Community Document")
+                    ->label('Community Document')
                     ->maxLength(255),
                 Forms\Components\TextInput::make('document_url')
                     ->maxLength(255),
